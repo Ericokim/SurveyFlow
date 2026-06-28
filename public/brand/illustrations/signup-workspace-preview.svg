@@ -1,0 +1,21 @@
+<svg width="540" height="360" viewBox="0 0 540 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Workspace setup preview">
+  <rect x="26" y="28" width="488" height="304" rx="22" fill="white" stroke="#E2E8F0" stroke-width="2"/>
+  <rect x="26" y="28" width="92" height="304" rx="22" fill="#F8FAFC"/>
+  <circle cx="72" cy="66" r="16" fill="#FFF1EC" stroke="#FF5A3C" stroke-width="3"/>
+  <rect x="54" y="108" width="42" height="28" rx="8" fill="#EAF5FF"/>
+  <rect x="54" y="152" width="42" height="8" rx="4" fill="#CBD5E1"/>
+  <rect x="54" y="184" width="42" height="8" rx="4" fill="#CBD5E1"/>
+  <rect x="54" y="216" width="42" height="8" rx="4" fill="#CBD5E1"/>
+  <text x="150" y="72" fill="#0B1220" font-family="Inter, Arial" font-size="18" font-weight="800">Acme Health Workspace</text>
+  <rect x="150" y="104" width="92" height="64" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <rect x="262" y="104" width="92" height="64" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <rect x="374" y="104" width="92" height="64" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <text x="166" y="130" fill="#64748B" font-family="Inter, Arial" font-size="10" font-weight="700">Surveys</text>
+  <text x="166" y="154" fill="#0B1220" font-family="Inter, Arial" font-size="20" font-weight="800">24</text>
+  <text x="278" y="130" fill="#64748B" font-family="Inter, Arial" font-size="10" font-weight="700">Responses</text>
+  <text x="278" y="154" fill="#0B1220" font-family="Inter, Arial" font-size="20" font-weight="800">1,284</text>
+  <text x="390" y="130" fill="#64748B" font-family="Inter, Arial" font-size="10" font-weight="700">Rate</text>
+  <text x="390" y="154" fill="#0B1220" font-family="Inter, Arial" font-size="20" font-weight="800">68%</text>
+  <rect x="150" y="198" width="316" height="72" rx="14" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <polyline points="172,242 208,230 244,238 280,214 316,224 352,205 432,190" fill="none" stroke="#1E90FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
