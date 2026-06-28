@@ -55,10 +55,13 @@ export function SectionHeader({
         align === "center" && "mx-auto items-center text-center",
       )}
     >
-      <Badge variant="outline" className="border-primary/30 text-primary">
+      <Badge
+        variant="outline"
+        className="h-auto border-0 px-3 py-1 font-normal text-primary text-sm outline outline-border"
+      >
         {label}
       </Badge>
-      <h2 className="font-bold text-3xl text-foreground tracking-normal sm:text-4xl">
+      <h2 className="font-medium text-4xl text-foreground tracking-normal sm:text-5xl">
         {title}
       </h2>
       <p className="text-base text-muted-foreground leading-7 sm:text-lg">

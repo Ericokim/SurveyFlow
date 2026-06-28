@@ -10,7 +10,7 @@ function BrandSlider({ brandList }: { brandList: BrandList[] }) {
   return (
     <section aria-label="Trusted teams">
       <div className="px-4 pt-8 pb-20 sm:px-6 md:pt-12 md:pb-24">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[1440px]">
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}

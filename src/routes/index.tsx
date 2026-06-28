@@ -69,9 +69,9 @@ function LandingPage() {
       <Navbar variant="public" />
       <main>
         <HeroSection />
-        <FeaturesSection />
+        {/* <FeaturesSection />
         <TemplatesSection />
-        <PricingSection />
+        <PricingSection /> */}
         <ResourcesSection />
       </main>
     </div>

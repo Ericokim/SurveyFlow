@@ -33,8 +33,8 @@ function HeroSection({ avatarList }: HeroSectionProps) {
       <div className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(circle_at_16%_42%,color-mix(in_srgb,var(--chart-1)_18%,transparent),transparent_34%),radial-gradient(circle_at_86%_34%,color-mix(in_srgb,var(--primary)_20%,transparent),transparent_34%),linear-gradient(90deg,color-mix(in_srgb,var(--chart-1)_10%,transparent),transparent_36%,color-mix(in_srgb,var(--primary)_9%,transparent))]" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-linear-to-b from-transparent to-background" />
 
-      <div className="mx-auto max-w-6xl">
-        <div className="mx-auto flex max-w-5xl flex-col gap-7 sm:gap-8">
+      <div className="mx-auto max-w-[1440px] px-0 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-col gap-7 sm:gap-8">
           <div className="relative flex flex-col items-center gap-5 text-center sm:gap-6">
             <motion.h1
               initial={{ opacity: 0, y: 32 }}
