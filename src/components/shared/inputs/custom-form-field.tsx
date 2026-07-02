@@ -164,7 +164,7 @@ function FieldShell({
   }
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn("flex min-w-0 flex-col gap-2", className)}>
       <Label htmlFor={controlId} className={labelClassName}>
         {label}
         {required ? <span className="sr-only"> required</span> : null}
@@ -208,7 +208,7 @@ function FieldFrame({
     <div
       data-invalid={invalid ? "" : undefined}
       className={cn(
-        "relative flex h-11 items-center rounded-xl border border-border bg-card shadow-sm transition-[border-color,box-shadow]",
+        "relative flex h-11 min-w-0 items-center overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-[border-color,box-shadow]",
         "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20",
         "data-[invalid]:border-destructive data-[invalid]:ring-2 data-[invalid]:ring-destructive/15",
         className,
@@ -295,7 +295,7 @@ function TextField(props: TextFieldProps & { controlId: string }) {
           aria-invalid={invalid || undefined}
           inputMode={fieldType === FormFieldType.OTP ? "numeric" : undefined}
           className={cn(
-            "sf-auth-input h-full rounded-xl border-0 bg-transparent shadow-none outline-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 aria-invalid:border-transparent aria-invalid:ring-0 aria-invalid:ring-offset-0 md:text-sm",
+            "sf-auth-input h-full min-w-0 rounded-xl border-0 bg-transparent shadow-none outline-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 aria-invalid:border-transparent aria-invalid:ring-0 aria-invalid:ring-offset-0 md:text-sm",
             Icon ? "pl-12" : "pl-4",
             isPassword ? "pr-12" : "pr-4",
             inputClassName,

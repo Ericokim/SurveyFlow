@@ -9,7 +9,7 @@ export const Route = createFileRoute("/dashboard")({
 function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <Navbar variant="app" />
       <main className="px-7 py-8">
         <div className="flex items-start justify-between gap-6">
           <div>

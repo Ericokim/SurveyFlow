@@ -68,10 +68,10 @@ function SignUpForm() {
   });
 
   return (
-    <Card className="w-full max-w-[590px] rounded-3xl border-border/80 bg-card/95 py-0 shadow-xl shadow-foreground/10">
-      <CardHeader className="items-center px-7 pt-5 text-center md:px-8 md:pt-6">
+    <Card className="w-full max-w-[358px] min-w-0 overflow-hidden rounded-2xl border-border/80 bg-card/95 py-0 shadow-xl shadow-foreground/10 sm:max-w-[590px] md:rounded-3xl">
+      <CardHeader className="items-center px-5 pt-5 text-center sm:px-7 md:px-8 md:pt-6">
         <CardTitle>
-          <h1 className="font-extrabold text-3xl text-foreground tracking-normal xl:text-4xl">
+          <h1 className="font-extrabold text-2xl text-foreground tracking-normal sm:text-3xl xl:text-4xl">
             Create your account
           </h1>
         </CardTitle>
@@ -80,9 +80,9 @@ function SignUpForm() {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="px-7 pb-5 md:px-8 md:pb-6">
+      <CardContent className="px-5 pb-5 sm:px-7 md:px-8 md:pb-6">
         <form
-          className="flex flex-col gap-3"
+          className="flex w-full min-w-0 flex-col gap-3"
           noValidate
           onSubmit={(event) => {
             event.preventDefault();
@@ -90,7 +90,7 @@ function SignUpForm() {
             void form.handleSubmit();
           }}
         >
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid min-w-0 gap-3 lg:grid-cols-2">
             <form.Field name="fullName">
               {(field) => (
                 <TanStackFormField
@@ -135,7 +135,7 @@ function SignUpForm() {
             )}
           </form.Field>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid min-w-0 gap-3 lg:grid-cols-2">
             <form.Field name="password">
               {(field) => (
                 <TanStackFormField
@@ -169,7 +169,7 @@ function SignUpForm() {
                 field={field}
                 fieldType={FormFieldType.CHECKBOX}
                 required
-                labelClassName="font-normal text-muted-foreground text-sm"
+                labelClassName="min-w-0 max-w-full flex-wrap break-words font-normal text-muted-foreground text-xs leading-5 sm:text-sm"
                 label={
                   <>
                     I agree to the{" "}

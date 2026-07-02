@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Mail } from "lucide-react";
 import { z } from "zod";
 
@@ -40,6 +40,7 @@ function SignInRoute() {
 }
 
 function SignInForm() {
+  const navigate = useNavigate();
   const form = useForm({
     defaultValues: {
       email: "",
@@ -51,14 +52,15 @@ function SignInForm() {
     },
     onSubmit: ({ value }) => {
       void value;
+      void navigate({ to: "/dashboard" });
     },
   });
 
   return (
-    <Card className="w-full max-w-[590px] rounded-3xl border-border/80 bg-card/95 py-0 shadow-xl shadow-foreground/10">
-      <CardHeader className="items-center px-7 pt-7 text-center md:px-8 md:pt-8">
+    <Card className="w-full max-w-[358px] min-w-0 overflow-hidden rounded-2xl border-border/80 bg-card/95 py-0 shadow-xl shadow-foreground/10 sm:max-w-[590px] md:rounded-3xl">
+      <CardHeader className="items-center px-5 pt-6 text-center sm:px-7 md:px-8 md:pt-8">
         <CardTitle>
-          <h1 className="font-extrabold text-3xl text-foreground tracking-normal xl:text-4xl">
+          <h1 className="font-extrabold text-2xl text-foreground tracking-normal sm:text-3xl xl:text-4xl">
             Welcome back
           </h1>
         </CardTitle>
@@ -67,9 +69,9 @@ function SignInForm() {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="px-7 pb-7 md:px-8 md:pb-8">
+      <CardContent className="px-5 pb-6 sm:px-7 sm:pb-7 md:px-8 md:pb-8">
         <form
-          className="flex flex-col gap-3.5"
+          className="flex w-full min-w-0 flex-col gap-3.5"
           noValidate
           onSubmit={(event) => {
             event.preventDefault();
@@ -105,7 +107,7 @@ function SignInForm() {
             )}
           </form.Field>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
             <form.Field name="remember">
               {(field) => (
                 <TanStackFormField

@@ -34,25 +34,25 @@ export function AuthPageShell({
       };
 
   return (
-    <main className="min-h-screen bg-background lg:h-screen lg:overflow-hidden">
+    <main className="min-h-screen max-w-full overflow-x-hidden bg-background lg:h-screen lg:overflow-hidden">
       <Navbar variant="auth" />
 
-      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden lg:h-[calc(100vh-4rem)]">
+      <section className="relative min-h-[calc(100vh-4rem)] max-w-full overflow-x-hidden lg:h-[calc(100vh-4rem)] lg:overflow-hidden">
         <div className="absolute inset-y-0 left-[43%] hidden w-px bg-border/70 lg:block" />
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-[radial-gradient(circle_at_10%_43%,color-mix(in_srgb,var(--primary)_10%,transparent),transparent_27rem)]"
         />
 
-        <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] w-full items-start gap-8 px-6 py-8 md:px-10 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:px-20 lg:pt-10 lg:pb-4 xl:px-28 2xl:px-36">
+        <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-full min-w-0 grid-cols-[minmax(0,1fr)] items-start gap-5 px-4 py-5 sm:px-8 md:px-10 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:gap-8 lg:px-20 lg:pt-10 lg:pb-4 xl:px-28 2xl:px-36">
           <motion.aside
             {...motionProps}
-            className="mx-auto flex w-full max-w-[560px] flex-col lg:mx-0 lg:pl-0"
+            className="mx-0 flex w-full max-w-[358px] min-w-0 flex-col text-left sm:mx-auto sm:max-w-xl lg:mx-0 lg:pl-0"
           >
-            <p className="font-extrabold text-3xl text-foreground leading-tight tracking-normal xl:text-4xl">
+            <p className="font-extrabold text-2xl text-foreground leading-tight tracking-normal sm:text-3xl xl:text-4xl">
               {title}
             </p>
-            <p className="mt-2 max-w-md text-muted-foreground text-sm leading-6">
+            <p className="mt-2 max-w-full text-muted-foreground text-sm leading-6 lg:max-w-md">
               {description}
             </p>
 
@@ -62,7 +62,7 @@ export function AuthPageShell({
 
           <motion.section
             {...motionProps}
-            className="flex w-full justify-center"
+            className="flex w-full max-w-full min-w-0 justify-start sm:justify-center"
             aria-label={formLabel}
           >
             {children}
@@ -142,7 +142,7 @@ function ProductPreview() {
 
 function BenefitList({ benefits }: { benefits: readonly AuthBenefit[] }) {
   return (
-    <div className="mt-5 flex flex-col gap-3.5">
+    <div className="mt-5 hidden flex-col gap-3.5 lg:flex">
       {benefits.map((benefit) => {
         const Icon = benefit.icon;
 

@@ -198,6 +198,8 @@ function Logo({
   variant: Exclude<NavbarVariant, "auto">;
 }) {
   const isAuth = variant === "auth";
+  const isPublic = variant === "public";
+  const isCompact = isAuth || isPublic;
 
   return (
     <Link
@@ -209,19 +211,24 @@ function Logo({
           requestSectionScroll("home");
         }
       }}
-      className={cn("flex shrink-0 items-center", isAuth ? "gap-2.5" : "gap-3")}
+      className={cn(
+        "flex shrink-0 items-center",
+        isCompact ? "gap-2" : "gap-3",
+      )}
     >
       <img
         src={
-          isAuth
+          isCompact
             ? "/brand/logos/surveyflow-mark.png"
             : "/brand/logos/surveyflow-wordmark.png"
         }
         alt={name}
-        className={cn(isAuth ? "size-9 rounded-lg" : "h-20 w-auto")}
+        className={cn(
+          isCompact ? "size-8 rounded-lg sm:size-9" : "h-20 w-auto",
+        )}
       />
-      {isAuth ? (
-        <span className="font-extrabold text-2xl text-foreground tracking-normal">
+      {isCompact ? (
+        <span className="font-extrabold text-xl text-foreground tracking-normal sm:text-2xl">
           {name}
         </span>
       ) : null}
@@ -246,7 +253,7 @@ function DesktopNavigation({
 }) {
   return (
     <NavigationMenu viewport={false} className="hidden lg:flex">
-      <NavigationMenuList className="gap-8">
+      <NavigationMenuList className="gap-5 xl:gap-7">
         {items.map((item) => {
           const active = isActiveNavItem(pathname, hash, item, activeSectionId);
           const className = cn(
@@ -412,12 +419,12 @@ function MobileMenu({
 
 function PublicActions() {
   return (
-    <div className="hidden items-center gap-3 lg:flex">
-      <Button asChild variant="ghost">
+    <div className="hidden items-center gap-2 lg:flex">
+      <Button asChild variant="ghost" size="sm">
         <Link to={authNavActions.login.to}>{authNavActions.login.title}</Link>
       </Button>
 
-      <Button asChild>
+      <Button asChild size="sm">
         <Link to={authNavActions.register.to}>
           {authNavActions.register.title}
         </Link>
@@ -432,7 +439,7 @@ function AuthActions({ pathname }: { pathname: string }) {
   return (
     <Link
       to={isRegister ? "/auth/login" : "/auth/register"}
-      className="rounded-md font-semibold text-primary text-sm transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="hidden rounded-md font-semibold text-primary text-sm transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:inline-flex"
     >
       {isRegister ? "Sign in" : "Create account"}
     </Link>
@@ -581,8 +588,8 @@ export function Navbar({ name = "SurveyFlow", variant = "auto" }: NavbarProps) {
     >
       <div
         className={cn(
-          "mx-auto grid max-w-[1440px] grid-cols-[auto_1fr_auto] items-center gap-6 px-6",
-          resolvedVariant === "auth" ? "h-16 md:px-8" : "h-20",
+          "mx-auto grid max-w-[1440px] grid-cols-[auto_1fr_auto] items-center gap-4 px-4 md:px-8",
+          resolvedVariant === "app" ? "h-20 gap-6 px-6" : "h-16",
         )}
       >
         <Logo
