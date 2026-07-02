@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 declare global {
   interface AppNavItem {
@@ -13,6 +14,25 @@ declare global {
   interface AppNavAction {
     title: string;
     to: string;
+  }
+
+  interface AuthBenefit {
+    title: string;
+    description: string;
+    icon: LucideIcon;
+    tone?: string;
+  }
+
+  interface AuthPreviewRow {
+    title: string;
+    tone: string;
+    widthClassName: string;
+  }
+
+  interface AuthMarketingContent {
+    title?: ReactNode;
+    description: string;
+    benefits: readonly AuthBenefit[];
   }
 
   interface Company {

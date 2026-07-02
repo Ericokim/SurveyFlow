@@ -190,11 +190,15 @@ function Logo({
   name,
   enableSectionScroll,
   onSectionChange,
+  variant,
 }: {
   name: string;
   enableSectionScroll: boolean;
   onSectionChange: (sectionId: LandingSectionId) => void;
+  variant: Exclude<NavbarVariant, "auto">;
 }) {
+  const isAuth = variant === "auth";
+
   return (
     <Link
       to="/"
@@ -205,13 +209,22 @@ function Logo({
           requestSectionScroll("home");
         }
       }}
-      className="flex shrink-0 items-center"
+      className={cn("flex shrink-0 items-center", isAuth ? "gap-2.5" : "gap-3")}
     >
       <img
-        src="/brand/logos/surveyflow-wordmark.png"
+        src={
+          isAuth
+            ? "/brand/logos/surveyflow-mark.png"
+            : "/brand/logos/surveyflow-wordmark.png"
+        }
         alt={name}
-        className="h-20 w-auto"
+        className={cn(isAuth ? "size-9 rounded-lg" : "h-20 w-auto")}
       />
+      {isAuth ? (
+        <span className="font-extrabold text-2xl text-foreground tracking-normal">
+          {name}
+        </span>
+      ) : null}
     </Link>
   );
 }
@@ -417,11 +430,12 @@ function AuthActions({ pathname }: { pathname: string }) {
   const isRegister = pathname.includes("/register");
 
   return (
-    <Button asChild variant={isRegister ? "ghost" : "default"}>
-      <Link to={isRegister ? "/auth/login" : "/auth/register"}>
-        {isRegister ? "Sign in" : "Create account"}
-      </Link>
-    </Button>
+    <Link
+      to={isRegister ? "/auth/login" : "/auth/register"}
+      className="rounded-md font-semibold text-primary text-sm transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      {isRegister ? "Sign in" : "Create account"}
+    </Link>
   );
 }
 
@@ -560,17 +574,22 @@ export function Navbar({ name = "SurveyFlow", variant = "auto" }: NavbarProps) {
 
   return (
     <motion.header
-      initial={{ opacity: 0, y: -32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.7, ease: "easeInOut" }}
+      initial={{ opacity: 1, y: 0 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       className="sticky top-0 z-50 w-full border-border/80 border-b bg-background/95 backdrop-blur-xl"
     >
-      <div className="mx-auto grid h-20 max-w-[1440px] grid-cols-[auto_1fr_auto] items-center gap-6 px-6">
+      <div
+        className={cn(
+          "mx-auto grid max-w-[1440px] grid-cols-[auto_1fr_auto] items-center gap-6 px-6",
+          resolvedVariant === "auth" ? "h-16 md:px-8" : "h-20",
+        )}
+      >
         <Logo
           name={name}
           enableSectionScroll={enableSectionScroll}
           onSectionChange={activateSection}
+          variant={resolvedVariant}
         />
 
         <div className="flex justify-center">
