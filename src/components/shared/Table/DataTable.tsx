@@ -1,5 +1,5 @@
 import { flexRender, type Table as TanStackTable } from "@tanstack/react-table";
-import type * as React from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import {
   Table,
@@ -12,9 +12,9 @@ import {
 import { cn } from "@/lib/utils";
 import { DataTablePagination } from "./DataTableConfig";
 
-type DataTableProps<TData> = React.ComponentProps<"div"> & {
+type DataTableProps<TData> = ComponentProps<"div"> & {
   table: TanStackTable<TData>;
-  actionBar?: React.ReactNode;
+  actionBar?: ReactNode;
   containerClassName?: string;
   emptyMessage?: string;
   paginationClassName?: string;
@@ -50,7 +50,7 @@ export function DataTable<TData>({
                     key={header.id}
                     colSpan={header.colSpan}
                     className="whitespace-nowrap"
-                    style={{ width: header.getSize() }}
+                    style={{ minWidth: header.getSize() }}
                     aria-sort={
                       header.column.getIsSorted() === "asc"
                         ? "ascending"
@@ -82,7 +82,7 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      style={{ width: cell.column.getSize() }}
+                      style={{ minWidth: cell.column.getSize() }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

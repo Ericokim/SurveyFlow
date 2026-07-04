@@ -264,7 +264,7 @@ export function RecentSurveysTable({ data }: { data: RecentSurvey[] }) {
           showPagination={false}
           emptyMessage="No recent surveys found."
           containerClassName="rounded-none border-x-0 border-b-0"
-          className="[&_[data-slot=table-container]]:overflow-x-auto [&_[data-slot=table-head]]:h-10 [&_[data-slot=table-row]]:last:border-b-0 [&_table]:min-w-[760px] [&_table]:table-fixed [&_td]:h-[57px] [&_th:first-child]:pl-5 [&_td:first-child]:pl-5 [&_th:last-child]:pr-5 [&_td:last-child]:pr-5"
+          className="[&_[data-slot=table-container]]:overflow-x-auto [&_[data-slot=table-head]]:h-10 [&_[data-slot=table-row]]:last:border-b-0 [&_table]:w-full [&_td]:h-[57px] [&_th:first-child]:pl-5 [&_td:first-child]:pl-5 [&_th:last-child]:pr-5 [&_td:last-child]:pr-5"
         />
       </CardContent>
     </Card>

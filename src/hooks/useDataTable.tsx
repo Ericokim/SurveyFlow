@@ -5,6 +5,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type InitialTableState,
   type PaginationState,
   type RowSelectionState,
   type SortingState,
@@ -18,6 +19,7 @@ type UseDataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   initialPageSize?: number;
   initialSorting?: SortingState;
+  initialState?: InitialTableState;
 };
 
 export function useDataTable<TData, TValue>({
@@ -25,14 +27,23 @@ export function useDataTable<TData, TValue>({
   columns,
   initialPageSize = 10,
   initialSorting = [],
+  initialState,
 }: UseDataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>(initialSorting);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [sorting, setSorting] = useState<SortingState>(
+    initialState?.sorting ?? initialSorting,
+  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    initialState?.columnFilters ?? [],
+  );
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    initialState?.columnVisibility ?? {},
+  );
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>(
+    initialState?.rowSelection ?? {},
+  );
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: initialPageSize,
+    pageIndex: initialState?.pagination?.pageIndex ?? 0,
+    pageSize: initialState?.pagination?.pageSize ?? initialPageSize,
   });
 
   const table = useReactTable({
