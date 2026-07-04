@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { landingTemplates } from "@/features/landing";
+import { landingTemplates } from "@/constants/landing";
 import { MotionBlock, SectionHeader } from "./shared";
 
 export function TemplatesSection() {

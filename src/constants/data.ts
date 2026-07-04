@@ -1,7 +1,6 @@
 import {
   BadgeDollarSign,
   BarChart3,
-  Bell,
   BookOpen,
   Building2,
   Home,
@@ -106,21 +105,71 @@ export const workspaceNav = {
   icon: Building2,
 } as const;
 
+export const workspaceOptions = [
+  {
+    name: "Acme Health",
+    role: "Owner",
+    active: true,
+  },
+  {
+    name: "CareOps East",
+    role: "Admin",
+    active: false,
+  },
+  {
+    name: "Northstar Clinics",
+    role: "Analyst",
+    active: false,
+  },
+] as const;
+
+export const workspaceMenuItems = [
+  {
+    title: "Workspace settings",
+    to: "/app/workspace/branding",
+    icon: Settings,
+  },
+  {
+    title: "Users & roles",
+    to: "/app/workspace/users",
+    icon: UsersRound,
+  },
+  {
+    title: "Audit logs",
+    to: "/app/workspace/audit-logs",
+    icon: BookOpen,
+  },
+] as const;
+
+export const notificationItems = [
+  {
+    title: "New survey response",
+    description: "Patient Intake Form received 12 new answers.",
+    time: "4 min ago",
+    unread: true,
+    icon: MessageSquareText,
+  },
+  {
+    title: "Completion trend changed",
+    description: "Acme Health satisfaction score is up 8% this week.",
+    time: "1 hr ago",
+    unread: true,
+    icon: BarChart3,
+  },
+  {
+    title: "Workspace invite accepted",
+    description: "Maya joined CareOps East as an analyst.",
+    time: "Yesterday",
+    unread: true,
+    icon: UsersRound,
+  },
+] as const;
+
 export const userMenuItems = [
   {
     title: "Profile",
     to: "/app/profile",
     icon: UserRound,
-  },
-  {
-    title: "Workspace Settings",
-    to: "/app/workspace/branding",
-    icon: Settings,
-  },
-  {
-    title: "Notifications",
-    to: "/app/notifications",
-    icon: Bell,
   },
   {
     title: "Support",

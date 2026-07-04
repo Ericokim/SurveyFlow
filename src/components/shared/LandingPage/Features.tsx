@@ -2,10 +2,25 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { landingFeatures } from "@/features/landing";
+import { landingFeatures } from "@/constants/landing";
+import { cn } from "@/lib/utils";
 import { MotionBlock } from "./shared";
 
 const featureHighlights = landingFeatures.slice(0, 3);
+const featureImages = [
+  {
+    src: "/brand/auth/survey-overview.png",
+    alt: "SurveyFlow survey overview screen",
+  },
+  {
+    src: "/brand/auth/respondent-access.png",
+    alt: "SurveyFlow respondent access screen",
+  },
+  {
+    src: "/brand/auth/analytics-insights.png",
+    alt: "SurveyFlow analytics insights screen",
+  },
+] as const;
 
 export function FeaturesSection() {
   return (
@@ -61,13 +76,25 @@ export function FeaturesSection() {
           </MotionBlock>
 
           <MotionBlock delay={0.12}>
-            <div className="relative overflow-hidden rounded-2xl border bg-background shadow-xl shadow-primary/5">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,color-mix(in_srgb,var(--chart-1)_18%,transparent),transparent_32%),radial-gradient(circle_at_80%_20%,color-mix(in_srgb,var(--primary)_18%,transparent),transparent_34%)]" />
-              <img
-                src="/brand/illustrations/landing-dashboard-preview.svg"
-                alt="SurveyFlow analytics dashboard preview"
-                className="relative aspect-[4/3] w-full object-cover object-left-top sm:aspect-[16/11]"
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {featureImages.map((image, index) => (
+                <div
+                  key={image.src}
+                  className={cn(
+                    "overflow-hidden rounded-2xl border bg-background shadow-xl shadow-primary/5",
+                    index === 0 && "sm:col-span-2",
+                  )}
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className={cn(
+                      "w-full object-cover object-left-top",
+                      index === 0 ? "aspect-[16/9]" : "aspect-[4/3]",
+                    )}
+                  />
+                </div>
+              ))}
             </div>
           </MotionBlock>
         </div>

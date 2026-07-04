@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { signUpAuthContent } from "@/features/auth";
+import { signUpAuthContent } from "@/constants/auth";
 
 const signUpSchema = z
   .object({

@@ -7,7 +7,7 @@ import { PricingSection } from "@/components/shared/LandingPage/Price";
 import { ResourcesSection } from "@/components/shared/LandingPage/Resources";
 import { TemplatesSection } from "@/components/shared/LandingPage/Templates";
 import Navbar from "@/components/shared/Navbar";
-import { type LandingSectionId, landingSectionIds } from "@/features/landing";
+import { type LandingSectionId, landingSectionIds } from "@/constants/landing";
 
 export const Route = createFileRoute("/")({ component: LandingPage });
 

@@ -2,7 +2,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import type { LandingSectionId } from "@/features/landing";
+import type { LandingSectionId } from "@/constants/landing";
 import { cn } from "@/lib/utils";
 
 export function requestSectionScroll(sectionId: LandingSectionId) {

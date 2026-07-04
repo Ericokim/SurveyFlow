@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { landingPricingPlans } from "@/features/landing";
+import { landingPricingPlans } from "@/constants/landing";
 import { cn } from "@/lib/utils";
 import { MotionBlock, SectionHeader } from "./shared";
 

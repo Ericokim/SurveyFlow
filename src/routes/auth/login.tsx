@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { signInAuthContent } from "@/features/auth";
+import { signInAuthContent } from "@/constants/auth";
 
 const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),

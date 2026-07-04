@@ -7,44 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 export const FormFieldType = {
   INPUT: "input",
-  FILE_UPLOAD: "file",
   PASSWORD: "password",
-  OTP: "otp",
-  TEXTAREA: "textarea",
-  PHONE_INPUT: "phoneInput",
   CHECKBOX: "checkbox",
-  DATE_PICKER: "datePicker",
-  DATE_TIME_PICKER: "dateTimePicker",
-  DATE: "datePick",
-  SELECT: "select",
-  MULTISELECT: "multiselect",
-  SWITCH: "switch",
-  SKELETON: "skeleton",
-  TAGS: "tags",
 } as const;
 
 export type FormFieldTypeValue =
   (typeof FormFieldType)[keyof typeof FormFieldType];
-
-type SelectOption = {
-  label: string;
-  value: string;
-  disabled?: boolean;
-};
 
 type BaseFieldProps = {
   fieldType?: FormFieldTypeValue;
@@ -61,64 +33,42 @@ type BaseFieldProps = {
   required?: boolean;
 };
 
-type TextFieldType =
-  | typeof FormFieldType.INPUT
-  | typeof FormFieldType.FILE_UPLOAD
-  | typeof FormFieldType.PASSWORD
-  | typeof FormFieldType.OTP
-  | typeof FormFieldType.PHONE_INPUT
-  | typeof FormFieldType.DATE_PICKER
-  | typeof FormFieldType.DATE_TIME_PICKER
-  | typeof FormFieldType.DATE
-  | typeof FormFieldType.TAGS;
-
-type TextFieldProps = BaseFieldProps &
+export type CustomFormFieldProps = BaseFieldProps &
   Omit<
-    React.ComponentProps<typeof Input>,
-    "id" | "name" | "type" | "className" | "aria-invalid"
+    React.InputHTMLAttributes<HTMLInputElement>,
+    "id" | "name" | "className" | "type" | "required"
   > & {
-    fieldType?: TextFieldType;
     type?: React.HTMLInputTypeAttribute;
-  };
-
-type TextareaFieldProps = BaseFieldProps &
-  Omit<
-    React.ComponentProps<typeof Textarea>,
-    "id" | "name" | "className" | "aria-invalid"
-  > & {
-    fieldType: typeof FormFieldType.TEXTAREA;
-  };
-
-type SelectFieldProps = BaseFieldProps & {
-  fieldType: typeof FormFieldType.SELECT | typeof FormFieldType.MULTISELECT;
-  options: readonly SelectOption[];
-  value?: string;
-  defaultValue?: string;
-  placeholder?: string;
-  disabled?: boolean;
-  onValueChange?: (value: string) => void;
-};
-
-type BooleanFieldProps = BaseFieldProps &
-  Omit<
-    React.ComponentProps<typeof Checkbox>,
-    "id" | "name" | "className" | "onCheckedChange"
-  > & {
-    fieldType: typeof FormFieldType.CHECKBOX | typeof FormFieldType.SWITCH;
     onCheckedChange?: (checked: boolean) => void;
   };
 
-type SkeletonFieldProps = BaseFieldProps & {
-  fieldType: typeof FormFieldType.SKELETON;
-  renderSkeleton: () => React.ReactNode;
+type SupportTextProps = {
+  description?: React.ReactNode;
+  error?: React.ReactNode;
 };
 
-export type CustomFormFieldProps =
-  | TextFieldProps
-  | TextareaFieldProps
-  | SelectFieldProps
-  | BooleanFieldProps
-  | SkeletonFieldProps;
+function SupportText({ description, error }: SupportTextProps) {
+  const content = error ?? description;
+
+  if (!content) return null;
+
+  return (
+    <p
+      className={cn(
+        "text-sm leading-6",
+        error ? "text-destructive" : "text-muted-foreground",
+      )}
+    >
+      {content}
+    </p>
+  );
+}
+
+type FieldShellProps = BaseFieldProps & {
+  children: React.ReactNode;
+  controlId: string;
+  inline?: boolean;
+};
 
 function FieldShell({
   children,
@@ -126,30 +76,18 @@ function FieldShell({
   controlId,
   description,
   error,
-  inline = false,
+  inline,
   label,
   labelClassName,
   required,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  controlId: string;
-  description?: React.ReactNode;
-  error?: React.ReactNode;
-  inline?: boolean;
-  label?: React.ReactNode;
-  labelClassName?: string;
-  required?: boolean;
-}) {
-  if (!label) {
-    return <div className={className}>{children}</div>;
-  }
+}: FieldShellProps) {
+  if (!label) return <div className={className}>{children}</div>;
 
   if (inline) {
     return (
       <div className={cn("flex items-start gap-3", className)}>
         {children}
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="min-w-0 flex-1">
           <Label
             htmlFor={controlId}
             className={cn("font-normal leading-6", labelClassName)}
@@ -157,7 +95,7 @@ function FieldShell({
             {label}
             {required ? <span className="sr-only"> required</span> : null}
           </Label>
-          <FieldSupportText description={description} error={error} />
+          <SupportText description={description} error={error} />
         </div>
       </div>
     );
@@ -170,29 +108,9 @@ function FieldShell({
         {required ? <span className="sr-only"> required</span> : null}
       </Label>
       {children}
-      <FieldSupportText description={description} error={error} />
+      <SupportText description={description} error={error} />
     </div>
   );
-}
-
-function FieldSupportText({
-  description,
-  error,
-}: {
-  description?: React.ReactNode;
-  error?: React.ReactNode;
-}) {
-  if (error) {
-    return <p className="text-destructive text-sm leading-6">{error}</p>;
-  }
-
-  if (description) {
-    return (
-      <p className="text-muted-foreground text-sm leading-6">{description}</p>
-    );
-  }
-
-  return null;
 }
 
 function FieldFrame({
@@ -219,35 +137,33 @@ function FieldFrame({
   );
 }
 
-function getInputType(
-  fieldType: TextFieldType | undefined,
-  type: React.HTMLInputTypeAttribute | undefined,
-  showPassword: boolean,
-) {
-  if (fieldType === FormFieldType.PASSWORD) {
-    return showPassword ? "text" : "password";
-  }
+function PasswordToggle({
+  label,
+  onClick,
+  visible,
+}: {
+  label?: React.ReactNode;
+  onClick: () => void;
+  visible: boolean;
+}) {
+  const fieldName =
+    typeof label === "string" ? label.toLowerCase() : "password";
 
-  if (type) return type;
-
-  switch (fieldType) {
-    case FormFieldType.FILE_UPLOAD:
-      return "file";
-    case FormFieldType.OTP:
-      return "text";
-    case FormFieldType.PHONE_INPUT:
-      return "tel";
-    case FormFieldType.DATE:
-    case FormFieldType.DATE_PICKER:
-      return "date";
-    case FormFieldType.DATE_TIME_PICKER:
-      return "datetime-local";
-    default:
-      return "text";
-  }
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-sm"
+      className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground hover:text-foreground"
+      aria-label={visible ? `Hide ${fieldName}` : `Show ${fieldName}`}
+      onClick={onClick}
+    >
+      {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+    </Button>
+  );
 }
 
-function TextField(props: TextFieldProps & { controlId: string }) {
+function TextInputField(props: CustomFormFieldProps & { controlId: string }) {
   const {
     className,
     controlClassName,
@@ -260,13 +176,12 @@ function TextField(props: TextFieldProps & { controlId: string }) {
     label,
     labelClassName,
     required,
-    type,
+    type = "text",
     ...inputProps
   } = props;
   const [showPassword, setShowPassword] = useState(false);
-  const invalid = Boolean(error);
-  const inputType = getInputType(fieldType, type, showPassword);
   const isPassword = fieldType === FormFieldType.PASSWORD;
+  const invalid = Boolean(error);
 
   return (
     <FieldShell
@@ -281,92 +196,40 @@ function TextField(props: TextFieldProps & { controlId: string }) {
       <FieldFrame invalid={invalid} className={controlClassName}>
         {Icon ? (
           <Icon
-            className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-4 size-5 text-muted-foreground"
             aria-hidden="true"
+            className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-4 size-5 text-muted-foreground"
           />
         ) : null}
 
         <Input
+          {...inputProps}
           id={controlId}
           name={props.name}
-          type={inputType}
+          type={isPassword && !showPassword ? "password" : type}
           required={required}
           aria-required={required || undefined}
           aria-invalid={invalid || undefined}
-          inputMode={fieldType === FormFieldType.OTP ? "numeric" : undefined}
           className={cn(
             "sf-auth-input h-full min-w-0 rounded-xl border-0 bg-transparent shadow-none outline-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 aria-invalid:border-transparent aria-invalid:ring-0 aria-invalid:ring-offset-0 md:text-sm",
             Icon ? "pl-12" : "pl-4",
             isPassword ? "pr-12" : "pr-4",
             inputClassName,
           )}
-          {...inputProps}
         />
 
         {isPassword ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground hover:text-foreground"
-            aria-label={showPassword ? `Hide ${label}` : `Show ${label}`}
+          <PasswordToggle
+            label={label}
+            visible={showPassword}
             onClick={() => setShowPassword((current) => !current)}
-          >
-            {showPassword ? (
-              <EyeOff aria-hidden="true" />
-            ) : (
-              <Eye aria-hidden="true" />
-            )}
-          </Button>
+          />
         ) : null}
       </FieldFrame>
     </FieldShell>
   );
 }
 
-function TextareaField(props: TextareaFieldProps & { controlId: string }) {
-  const {
-    className,
-    controlClassName,
-    controlId,
-    description,
-    error,
-    inputClassName,
-    label,
-    labelClassName,
-    required,
-    ...textareaProps
-  } = props;
-  const invalid = Boolean(error);
-
-  return (
-    <FieldShell
-      className={className}
-      controlId={controlId}
-      description={description}
-      error={error}
-      label={label}
-      labelClassName={labelClassName}
-      required={required}
-    >
-      <Textarea
-        id={controlId}
-        name={props.name}
-        required={required}
-        aria-required={required || undefined}
-        aria-invalid={invalid || undefined}
-        className={cn(
-          "min-h-24 rounded-xl bg-card shadow-xs",
-          controlClassName,
-          inputClassName,
-        )}
-        {...textareaProps}
-      />
-    </FieldShell>
-  );
-}
-
-function SelectField(props: SelectFieldProps & { controlId: string }) {
+function CheckboxField(props: CustomFormFieldProps & { controlId: string }) {
   const {
     className,
     controlClassName,
@@ -375,66 +238,11 @@ function SelectField(props: SelectFieldProps & { controlId: string }) {
     error,
     label,
     labelClassName,
-    options,
-    placeholder,
-    required,
-    ...selectProps
-  } = props;
-  const invalid = Boolean(error);
-
-  return (
-    <FieldShell
-      className={className}
-      controlId={controlId}
-      description={description}
-      error={error}
-      label={label}
-      labelClassName={labelClassName}
-      required={required}
-    >
-      <Select {...selectProps}>
-        <SelectTrigger
-          id={controlId}
-          aria-required={required || undefined}
-          aria-invalid={invalid || undefined}
-          className={cn("h-12 w-full rounded-xl bg-card", controlClassName)}
-        >
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {options.map((option) => (
-              <SelectItem
-                key={option.value}
-                value={option.value}
-                disabled={option.disabled}
-              >
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </FieldShell>
-  );
-}
-
-function BooleanField(props: BooleanFieldProps & { controlId: string }) {
-  const {
-    className,
-    controlClassName,
-    controlId,
-    description,
-    error,
-    fieldType,
-    label,
-    labelClassName,
-    required,
     onCheckedChange,
-    ...booleanProps
+    required,
+    ...inputProps
   } = props;
   const invalid = Boolean(error);
-  const checked = booleanProps.checked === true;
 
   return (
     <FieldShell
@@ -447,29 +255,17 @@ function BooleanField(props: BooleanFieldProps & { controlId: string }) {
       labelClassName={labelClassName}
       required={required}
     >
-      {fieldType === FormFieldType.SWITCH ? (
-        <Switch
-          id={controlId}
-          name={props.name}
-          checked={checked}
-          required={required}
-          aria-required={required || undefined}
-          aria-invalid={invalid || undefined}
-          className={cn("mt-1", controlClassName)}
-          onCheckedChange={onCheckedChange}
-        />
-      ) : (
-        <Checkbox
-          id={controlId}
-          name={props.name}
-          checked={checked}
-          required={required}
-          aria-required={required || undefined}
-          aria-invalid={invalid || undefined}
-          className={cn("mt-1", controlClassName)}
-          onCheckedChange={onCheckedChange}
-        />
-      )}
+      <Checkbox
+        id={controlId}
+        name={props.name}
+        checked={inputProps.checked === true}
+        required={required}
+        aria-required={required || undefined}
+        aria-invalid={invalid || undefined}
+        className={cn("mt-1", controlClassName)}
+        onBlur={inputProps.onBlur}
+        onCheckedChange={(checked) => onCheckedChange?.(checked === true)}
+      />
     </FieldShell>
   );
 }
@@ -478,33 +274,22 @@ export function CustomFormField(props: CustomFormFieldProps) {
   const generatedId = useId();
   const controlId = props.id ?? props.name ?? generatedId;
 
-  switch (props.fieldType) {
-    case FormFieldType.TEXTAREA:
-      return <TextareaField {...props} controlId={controlId} />;
-    case FormFieldType.SELECT:
-    case FormFieldType.MULTISELECT:
-      return <SelectField {...props} controlId={controlId} />;
-    case FormFieldType.CHECKBOX:
-    case FormFieldType.SWITCH:
-      return <BooleanField {...props} controlId={controlId} />;
-    case FormFieldType.SKELETON:
-      return props.renderSkeleton();
-    default:
-      return <TextField {...props} controlId={controlId} />;
+  if (props.fieldType === FormFieldType.CHECKBOX) {
+    return <CheckboxField {...props} controlId={controlId} />;
   }
+
+  return <TextInputField {...props} controlId={controlId} />;
 }
 
 type TanStackFormFieldProps = Omit<
   CustomFormFieldProps,
   | "checked"
   | "defaultChecked"
-  | "defaultValue"
   | "error"
   | "name"
   | "onBlur"
   | "onChange"
   | "onCheckedChange"
-  | "onValueChange"
   | "value"
 > & {
   field: AnyFieldApi;
@@ -518,6 +303,7 @@ function getFieldError(field: AnyFieldApi, fallback?: React.ReactNode) {
 
   if (!firstError) return undefined;
   if (typeof firstError === "string") return firstError;
+
   if (
     typeof firstError === "object" &&
     firstError !== null &&
@@ -534,72 +320,31 @@ export function TanStackFormField({
   error,
   ...props
 }: TanStackFormFieldProps) {
-  const fieldError = getFieldError(field, error);
   const name = String(field.name);
+  const fieldError = getFieldError(field, error);
+  const sharedProps = {
+    ...props,
+    id: props.id ?? name,
+    name,
+    error: fieldError,
+    onBlur: field.handleBlur,
+  };
 
-  if (
-    props.fieldType === FormFieldType.CHECKBOX ||
-    props.fieldType === FormFieldType.SWITCH
-  ) {
+  if (props.fieldType === FormFieldType.CHECKBOX) {
     return (
       <CustomFormField
-        {...props}
-        id={props.id ?? name}
-        name={name}
+        {...sharedProps}
         checked={Boolean(field.state.value)}
-        error={fieldError}
-        onBlur={field.handleBlur}
-        onCheckedChange={(checked) => {
-          field.handleChange(checked);
-        }}
-      />
-    );
-  }
-
-  if (
-    props.fieldType === FormFieldType.SELECT ||
-    props.fieldType === FormFieldType.MULTISELECT
-  ) {
-    return (
-      <CustomFormField
-        {...props}
-        id={props.id ?? name}
-        name={name}
-        value={String(field.state.value ?? "")}
-        error={fieldError}
-        onValueChange={(value) => {
-          field.handleChange(value);
-        }}
-      />
-    );
-  }
-
-  if (props.fieldType === FormFieldType.FILE_UPLOAD) {
-    return (
-      <CustomFormField
-        {...props}
-        id={props.id ?? name}
-        name={name}
-        error={fieldError}
-        onBlur={field.handleBlur}
-        onChange={(event) => {
-          field.handleChange(event.target.files?.[0] ?? null);
-        }}
+        onCheckedChange={(checked) => field.handleChange(checked)}
       />
     );
   }
 
   return (
     <CustomFormField
-      {...props}
-      id={props.id ?? name}
-      name={name}
+      {...sharedProps}
       value={String(field.state.value ?? "")}
-      error={fieldError}
-      onBlur={field.handleBlur}
-      onChange={(event) => {
-        field.handleChange(event.target.value);
-      }}
+      onChange={(event) => field.handleChange(event.target.value)}
     />
   );
 }

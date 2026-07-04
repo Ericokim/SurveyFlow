@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { landingFaqs, landingResources } from "@/features/landing";
+import { landingFaqs, landingResources } from "@/constants/landing";
 import { cn } from "@/lib/utils";
 import { MotionBlock, SectionHeader } from "./shared";
 

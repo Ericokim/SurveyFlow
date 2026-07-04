@@ -1,14 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import {
-  Bell,
-  Building2,
-  ChevronDown,
-  Menu,
-  Moon,
-  Search,
-  Sun,
-} from "lucide-react";
+import { Bell, Building2, ChevronDown, Menu, Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -18,6 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -30,9 +25,12 @@ import {
   appNavItems,
   authNavActions,
   navItems,
+  notificationItems,
   userMenuItems,
+  workspaceMenuItems,
   workspaceNav,
-} from "@/features/data";
+  workspaceOptions,
+} from "@/constants/data";
 import { cn } from "@/lib/utils";
 
 type NavbarVariant = "auto" | "public" | "auth" | "app";
@@ -41,6 +39,10 @@ type NavbarProps = {
   name?: string;
   variant?: NavbarVariant;
 };
+
+type ThemeMode = "light" | "dark";
+
+const themeStorageKey = "surveyflow-theme";
 
 type LandingSectionId = NonNullable<AppNavItem["sectionId"]>;
 
@@ -92,6 +94,7 @@ function isActiveNavItem(
   activeSectionId: LandingSectionId,
 ) {
   const currentHash = normalizeHash(hash);
+  const appPathname = pathname === "/dashboard" ? "/app/dashboard" : pathname;
 
   if (item.sectionId) {
     return isLandingPath(pathname) && item.sectionId === activeSectionId;
@@ -105,7 +108,7 @@ function isActiveNavItem(
     return pathname === item.to && !currentHash;
   }
 
-  return pathname === item.to || pathname.startsWith(`${item.to}/`);
+  return appPathname === item.to || appPathname.startsWith(`${item.to}/`);
 }
 
 function getSectionIdFromEvent(event: Event) {
@@ -186,6 +189,49 @@ function useActiveLandingSection(enabled: boolean) {
   return { activeSectionId, activateSection };
 }
 
+function getPreferredTheme(): ThemeMode {
+  if (typeof window === "undefined") return "light";
+
+  const storedTheme = window.localStorage.getItem(themeStorageKey);
+
+  if (storedTheme === "light" || storedTheme === "dark") return storedTheme;
+
+  return "light";
+}
+
+function applyThemeMode(theme: ThemeMode) {
+  document.documentElement.classList.toggle("dark", theme === "dark");
+}
+
+function useThemeMode() {
+  const [theme, setThemeState] = useState<ThemeMode>("light");
+
+  useEffect(() => {
+    const preferredTheme = getPreferredTheme();
+
+    setThemeState(preferredTheme);
+    applyThemeMode(preferredTheme);
+  }, []);
+
+  const setTheme = useCallback((nextTheme: ThemeMode) => {
+    setThemeState(nextTheme);
+    applyThemeMode(nextTheme);
+    window.localStorage.setItem(themeStorageKey, nextTheme);
+  }, []);
+
+  return { theme, setTheme };
+}
+
+function getWorkspaceInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
 function Logo({
   name,
   enableSectionScroll,
@@ -199,7 +245,7 @@ function Logo({
 }) {
   const isAuth = variant === "auth";
   const isPublic = variant === "public";
-  const isCompact = isAuth || isPublic;
+  const isCompact = isAuth || isPublic || variant === "app";
 
   return (
     <Link
@@ -224,7 +270,7 @@ function Logo({
         }
         alt={name}
         className={cn(
-          isCompact ? "size-8 rounded-lg sm:size-9" : "h-20 w-auto",
+          isCompact ? "size-8 rounded-lg sm:size-9" : "h-16 w-auto",
         )}
       />
       {isCompact ? (
@@ -446,121 +492,273 @@ function AuthActions({ pathname }: { pathname: string }) {
   );
 }
 
-function AppActions() {
-  const WorkspaceIcon = workspaceNav.icon ?? Building2;
+function ThemeToggle({
+  onThemeChange,
+  theme,
+}: {
+  onThemeChange: (theme: ThemeMode) => void;
+  theme: ThemeMode;
+}) {
+  const isDark = theme === "dark";
 
   return (
-    <div className="hidden items-center gap-7 lg:flex">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-10 text-foreground hover:bg-transparent"
-        aria-label="Search"
+    <Button
+      type="button"
+      variant="ghost"
+      role="switch"
+      aria-checked={isDark}
+      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      className="relative h-9 w-[76px] overflow-hidden rounded-full border bg-card p-1 text-muted-foreground shadow-xs hover:bg-card"
+      onClick={() => onThemeChange(isDark ? "light" : "dark")}
+    >
+      <span
+        className={cn(
+          "absolute top-1 left-1 size-7 rounded-full bg-primary shadow-md shadow-primary/20 transition-transform duration-200 ease-out",
+          isDark && "translate-x-10",
+        )}
+      />
+      <span
+        className={cn(
+          "relative z-10 flex size-7 items-center justify-center rounded-full transition-colors",
+          !isDark ? "text-primary-foreground" : "text-muted-foreground",
+        )}
       >
-        <Search className="size-6" />
-      </Button>
+        <Sun className="size-4" />
+      </span>
+      <span
+        className={cn(
+          "relative z-10 flex size-7 items-center justify-center rounded-full transition-colors",
+          isDark ? "text-primary-foreground" : "text-muted-foreground",
+        )}
+      >
+        <Moon className="size-4" />
+      </span>
+    </Button>
+  );
+}
 
-      <div className="flex h-10 w-[88px] items-center rounded-full border bg-card p-1 shadow-xs">
+function NotificationsMenu() {
+  const unreadCount = notificationItems.filter(
+    (notification) => notification.unread,
+  ).length;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          className="size-8 rounded-full text-foreground"
-          aria-label="Light mode"
+          className="relative size-9 text-foreground hover:bg-transparent"
+          aria-label="Notifications"
         >
-          <Sun className="size-4" />
+          <Bell className="size-5" />
+
+          {unreadCount ? (
+            <span className="-right-0.5 -top-1 absolute flex size-4 items-center justify-center rounded-full bg-primary font-bold text-[9px] text-primary-foreground">
+              {unreadCount}
+            </span>
+          ) : null}
         </Button>
+      </DropdownMenuTrigger>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-8 rounded-full bg-muted text-muted-foreground"
-          aria-label="Dark mode"
-        >
-          <Moon className="size-4" />
-        </Button>
-      </div>
+      <DropdownMenuContent align="end" className="w-[22rem] p-2">
+        <DropdownMenuLabel className="flex items-center justify-between px-2 py-2">
+          <span>Notifications</span>
+          <span className="font-normal text-muted-foreground text-xs">
+            {unreadCount} unread
+          </span>
+        </DropdownMenuLabel>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="relative size-10 text-foreground hover:bg-transparent"
-        aria-label="Notifications"
-      >
-        <Bell className="size-6" />
+        <DropdownMenuSeparator />
 
-        <span className="-right-0.5 -top-1 absolute flex size-5 items-center justify-center rounded-full bg-primary font-bold text-[10px] text-primary-foreground">
-          3
-        </span>
-      </Button>
+        <div className="flex flex-col gap-1 py-1">
+          {notificationItems.map((notification) => {
+            const Icon = notification.icon;
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="h-11 min-w-[190px] gap-2 rounded-lg px-5 font-semibold text-foreground shadow-xs"
+            return (
+              <DropdownMenuItem
+                key={notification.title}
+                className="items-start gap-3 rounded-md px-2 py-3"
+              >
+                <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon className="size-4" />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col gap-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate font-medium">
+                      {notification.title}
+                    </span>
+                    {notification.unread ? (
+                      <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+                    ) : null}
+                  </span>
+                  <span className="line-clamp-2 text-muted-foreground text-xs leading-5">
+                    {notification.description}
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    {notification.time}
+                  </span>
+                </span>
+              </DropdownMenuItem>
+            );
+          })}
+        </div>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link
+            to="/app/notifications"
+            className="flex items-center justify-center font-medium text-primary"
           >
-            <WorkspaceIcon className="size-4" />
-            {workspaceNav.name}
-            <ChevronDown className="size-4 text-muted-foreground" />
-          </Button>
-        </DropdownMenuTrigger>
+            View all notifications
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
-        <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel>Workspace</DropdownMenuLabel>
+function WorkspaceAccountMenu() {
+  const WorkspaceIcon = workspaceNav.icon ?? Building2;
+  const activeWorkspace =
+    workspaceOptions.find((workspace) => workspace.active) ??
+    workspaceOptions[0];
 
-          <DropdownMenuSeparator />
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className="h-10 gap-3 rounded-lg px-3 font-semibold text-foreground shadow-xs"
+        >
+          <span className="flex min-w-0 items-center gap-2">
+            <WorkspaceIcon className="size-4 shrink-0" />
+            <span className="max-w-36 truncate">{activeWorkspace.name}</span>
+          </span>
 
-          <DropdownMenuItem asChild>
-            <Link to={workspaceNav.to}>Workspace settings</Link>
-          </DropdownMenuItem>
+          <Avatar className="size-7">
+            <AvatarFallback className="bg-primary/10 font-bold text-primary text-xs">
+              EK
+            </AvatarFallback>
+          </Avatar>
 
-          <DropdownMenuItem asChild>
-            <Link to="/app/workspace/users">Users & roles</Link>
-          </DropdownMenuItem>
+          <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+        </Button>
+      </DropdownMenuTrigger>
 
-          <DropdownMenuItem asChild>
-            <Link to="/app/workspace/audit-logs">Audit logs</Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-11 gap-2 rounded-full px-2">
-            <Avatar size="lg">
+      <DropdownMenuContent align="end" className="w-80">
+        <DropdownMenuLabel>
+          <div className="flex items-center gap-3">
+            <Avatar>
               <AvatarFallback className="bg-primary/10 font-bold text-primary">
                 EK
               </AvatarFallback>
             </Avatar>
-
-            <ChevronDown className="size-4 text-muted-foreground" />
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel>
-            <div>
-              <p className="font-semibold">Eric Kimathi</p>
-              <p className="font-normal text-muted-foreground text-xs">Owner</p>
+            <div className="min-w-0">
+              <p className="truncate font-semibold">Eric Kimathi</p>
+              <p className="truncate font-normal text-muted-foreground text-xs">
+                {activeWorkspace.role} at {activeWorkspace.name}
+              </p>
             </div>
-          </DropdownMenuLabel>
+          </div>
+        </DropdownMenuLabel>
 
-          <DropdownMenuSeparator />
+        <DropdownMenuSeparator />
 
-          {userMenuItems.map((item) => {
-            const Icon = item.icon;
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="gap-2">
+            <WorkspaceIcon className="size-4" />
+            <span className="flex min-w-0 flex-1 flex-col">
+              <span>Switch workspace</span>
+              <span className="truncate font-normal text-muted-foreground text-xs">
+                {activeWorkspace.name}
+              </span>
+            </span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="w-72">
+            <DropdownMenuLabel className="text-muted-foreground text-xs">
+              Companies
+            </DropdownMenuLabel>
 
-            return (
-              <DropdownMenuItem key={item.title} asChild>
-                <Link to={item.to} className="flex items-center gap-2">
-                  <Icon className="size-4" />
-                  {item.title}
-                </Link>
+            {workspaceOptions.map((workspace) => (
+              <DropdownMenuItem
+                key={workspace.name}
+                className={cn(
+                  "items-start gap-3 rounded-md py-2 text-foreground",
+                  workspace.active &&
+                    "bg-primary/5 focus:bg-primary/5 focus:text-foreground",
+                )}
+                aria-current={workspace.active ? "true" : undefined}
+              >
+                <span
+                  className={cn(
+                    "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted font-bold text-[11px] text-muted-foreground",
+                    workspace.active && "bg-primary/10 text-primary",
+                  )}
+                >
+                  {getWorkspaceInitials(workspace.name)}
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span
+                    className={cn(
+                      "truncate font-medium text-foreground",
+                      workspace.active && "font-semibold",
+                    )}
+                  >
+                    {workspace.name}
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    {workspace.role}
+                  </span>
+                </span>
               </DropdownMenuItem>
-            );
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        {workspaceMenuItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <DropdownMenuItem key={item.title} asChild>
+              <Link to={item.to} className="flex items-center gap-2">
+                <Icon className="size-4" />
+                {item.title}
+              </Link>
+            </DropdownMenuItem>
+          );
+        })}
+
+        <DropdownMenuSeparator />
+
+        {userMenuItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <DropdownMenuItem key={item.title} asChild>
+              <Link to={item.to} className="flex items-center gap-2">
+                <Icon className="size-4" />
+                {item.title}
+              </Link>
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function AppActions() {
+  const { theme, setTheme } = useThemeMode();
+
+  return (
+    <div className="hidden items-center gap-4 lg:flex">
+      <ThemeToggle theme={theme} onThemeChange={setTheme} />
+
+      <NotificationsMenu />
+
+      <WorkspaceAccountMenu />
     </div>
   );
 }
@@ -589,7 +787,7 @@ export function Navbar({ name = "SurveyFlow", variant = "auto" }: NavbarProps) {
       <div
         className={cn(
           "mx-auto grid max-w-[1440px] grid-cols-[auto_1fr_auto] items-center gap-4 px-4 md:px-8",
-          resolvedVariant === "app" ? "h-20 gap-6 px-6" : "h-16",
+          resolvedVariant === "app" ? "h-16 gap-5 px-4 md:px-8" : "h-16",
         )}
       >
         <Logo

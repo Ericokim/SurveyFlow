@@ -3,7 +3,7 @@ import { Check, Send } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Navbar } from "@/components/shared/Navbar";
-import { authPreviewDots, authPreviewRows } from "@/features/auth";
+import { authPreviewDots, authPreviewRows } from "@/constants/auth";
 import { cn } from "@/lib/utils";
 
 type AuthPageShellProps = AuthMarketingContent & {
