@@ -2,95 +2,177 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Commands
+**`AGENTS.md` is the project handbook — read it first.** It holds the verified architecture, stack, routes, conventions, environment variables, security rules, technical debt, and definition of done. This file covers *how to operate* inside SurveyFlow; it does not repeat the handbook.
+
+---
+
+## 1. The one thing to internalize
+
+SurveyFlow is a **UI-first prototype**. There are no server functions, no API handlers, no `src/server/`, no database, no authentication, no multitenancy enforcement, and no tests in `src/`. Every page renders hardcoded mock data from `src/constants/*.ts`.
+
+Installed dependencies and installed agent skills are **not** evidence a feature exists. `mongoose`, `jsonwebtoken`, `bcryptjs`, and `twilio` have zero imports. Clerk and the AI SDK are not dependencies at all. Verify in the code before you describe or build on anything.
+
+---
+
+## 2. Before editing
+
+1. Read `AGENTS.md`.
+2. Read the feature files you are about to touch, in full.
+3. Check `package.json` for what is actually installed.
+4. Check the route tree (`src/routeTree.gen.ts`, `src/routes/`) for what actually exists.
+5. Search for an existing implementation before writing a new one (`Grep` for the component, hook, schema, or constant name).
+6. Read the relevant tests — and note when there are none.
+7. Run `git status` to see what is already modified.
+8. Inspect relevant history: `git log --oneline -- <path>`, `git show <commit>`.
+9. Identify the client/server boundary the change sits on.
+10. Confirm the real implementation path rather than the one you assumed.
+
+---
+
+## 3. Implementation behaviour
+
+- Think like a senior product engineer: understand the workflow before changing code.
+- Prefer minimal, surgical changes. Preserve working architecture.
+- Reuse existing components, hooks, services, models, schemas, and utilities.
+- Follow the existing naming and layering conventions (`AGENTS.md` §3.1).
+- Keep client and server concerns separated.
+- Preserve tenant isolation; validate every server input; authorize server-side.
+- Avoid speculative abstractions — no broad abstraction before two real callers.
+- Avoid unrelated cleanup. If you spot a problem outside your scope, document it instead of fixing it.
+- Add tests for behaviour you change.
+
+## 3.1 Project-specific constraints
+
+- **npm only.** Never introduce pnpm or yarn.
+- **Never edit `src/routeTree.gen.ts`** — it is generated (`npm run generate-routes`).
+- **Never import from `next/*`.** This is TanStack Start.
+- Generated shadcn components belong in `src/components/ui/` and nowhere else.
+- Use `@/` for app imports.
+- `verbatimModuleSyntax` is on — use `import type` for type-only imports.
+- `noUnusedLocals` / `noUnusedParameters` are errors; the codebase uses `void x` when a binding must exist but is unused.
+- Domain types in `type.d.ts` are **ambient globals** — do not import them.
+- Use semantic Tailwind tokens, never raw hex (`AGENTS.md` §11.3).
+
+---
+
+## 4. Survey-specific behaviour
+
+None of this is built yet, but once it is, these are protected invariants. Do not break them:
+
+survey editing · question ordering · section ordering · conditional logic · required-question behaviour · hidden-question behaviour · draft persistence · published-survey behaviour · response submission · response integrity · tenant ownership · export correctness · backwards compatibility with existing survey data.
+
+Changing the shape of stored survey or response data is a migration, not an edit. Get it approved.
+
+---
+
+## 5. Clerk guidance
+
+Clerk is **not installed and not used**. The Clerk skills are reference material for future approved auth work, and the auth provider is still undecided (`AGENTS.md` §7).
+
+If and when Clerk is adopted:
+
+- Use the existing Clerk helpers rather than hand-rolling session logic.
+- Validate sessions **server-side**; never trust client-only authentication.
+- Preserve organization and user scoping on every query.
+- Never expose Clerk secrets to the client.
+- Test both protected and public flows.
+- Follow `clerk-tanstack-patterns` — the other framework skills do not apply to this stack. Follow a skill only where it matches the repository's actual implementation.
+
+---
+
+## 6. MongoDB guidance
+
+MongoDB is **not connected yet**. When building it (`AGENTS.md` §8):
+
+- Reuse the existing database connection; never open a new one per request.
+- Reuse existing Mongoose models; guard registration to avoid `OverwriteModelError`.
+- Scope tenant-owned queries by `companyId`, always.
+- Validate identifiers before querying.
+- Avoid unbounded queries — paginate or limit.
+- Preserve indexes; handle duplicate-key errors explicitly.
+- No destructive schema changes without approval.
+- **Never run destructive commands against a production database.**
+
+---
+
+## 7. Vercel AI SDK guidance
+
+The AI SDK is **not installed** and SurveyFlow has no AI features. **Installing the `ai-sdk` skill does not authorize adding AI functionality to the application.**
+
+If AI work is ever approved: keep provider keys server-side, follow whatever model abstraction exists at that point, validate user input, protect private survey and response data, handle streaming failures with deterministic fallbacks, test the model-independent logic, and do not hard-code a provider unless the architecture requires it.
+
+---
+
+## 8. Playwright guidance
+
+Playwright is configured (`playwright.config.ts`, specs in `tests/`) with three Claude subagents in `.claude/agents/` and the `playwright-test` MCP server in `.mcp.json`.
+
+- Use the installed Playwright agents (planner → generator → healer) for browser verification.
+- Run `npx playwright install chromium` first — browsers are not downloaded yet.
+- Inspect the live application and validate **actual** routes: `/`, `/auth/login`, `/auth/register`, `/dashboard`, `/app/surveys`. Many navbar links point at routes that do not exist.
+- Use stable selectors — accessible roles and labels, not brittle CSS.
+- Verify desktop and mobile behaviour.
+- Cover critical user journeys and capture useful failure context.
+- **Do not rewrite a valid test to hide an application defect.** Fix the app or report the defect.
+- Playwright specs live in `tests/`; Vitest owns `src/`. Keep them separate — `vitest.config.ts` excludes `tests/**` deliberately.
+
+---
+
+## 9. UI verification
+
+For UI work, verify: correct route · correct layout · responsive behaviour · scroll behaviour · keyboard navigation · focus states · form labels · error messaging · loading states · empty states · touch-target sizes · colour contrast · no unintended regressions.
+
+---
+
+## 10. Required checks
+
+Discover and run the repository's real scripts. As of now:
 
 ```bash
-nvm use                 # Node 22 (see .nvmrc; engines requires >=22.12.0)
-npm run dev             # dev server on :3000, loads .env.local + Sentry instrumentation
-npm run build           # vite build -> dist/client (+ server bundle)
-npm run test            # vitest run --passWithNoTests
-npm run format          # biome format --write
-npm run lint            # biome lint
-npm run check           # biome check (lint + format + import sorting)
-npm run generate-routes # tsr generate — regenerate src/routeTree.gen.ts manually
+npm run format        # biome format --write
+npm run check         # biome check  — currently 3 PRE-EXISTING errors
+npx tsc --noEmit      # type check   — currently 15 PRE-EXISTING errors
+npm run test          # vitest       — passes (no test files yet)
+npm run build         # vite build   — passes
+npx playwright test   # e2e          — needs `npx playwright install chromium`
 ```
 
-Single test: `npx vitest run src/path/to/file.test.tsx -t "test name"`.
-Type check: `npx tsc --noEmit` (`vite build` does not type check).
+There is no `typecheck` script and `vite build` does not type check.
 
-Before considering a change complete (from `AGENTS.md`): `nvm use && npm run format && npm run check && npm run build`.
+**`npm run check` and `npx tsc --noEmit` already fail on pre-existing issues** (`AGENTS.md` §21, items 2–3). Compare your run against that baseline and make sure you added nothing new. Never claim a check passed unless you ran it and saw it pass.
 
-Use **npm** only — do not introduce pnpm or yarn.
+---
 
-## Stack
+## 11. Final report format
 
-TanStack Start (SSR) + React 19 (with React Compiler via Babel) + Vite 8 + TypeScript, TanStack Router/Query/Table/Form/Store, Tailwind v4, shadcn (new-york, zinc, lucide), Biome, Vitest, Sentry, Netlify. Backend deps are installed (mongoose, jsonwebtoken, bcryptjs, twilio) but **not yet wired up**.
+Every completed task reports:
 
-## Architecture
+- What was inspected
+- What changed, and why
+- Files modified
+- Tests added or updated
+- Commands executed
+- Validation results (per check: passed / failed / not available / not run + reason)
+- Remaining risks
+- Unresolved issues
+- Assumptions made
 
-### Layering (enforced — see `docs/architecture.md`, `AGENTS.md`)
+Distinguish failures you introduced from failures that were already there.
 
-- `src/routes` — pages and API endpoints **only**; keep them thin.
-- `src/features/<area>` — product logic, schemas, services, server functions, feature-local components (e.g. `src/features/surveys/surveys-table.tsx`).
-- `src/server` — DB connection, Mongoose models, auth primitives. **Does not exist yet**; create it when database work begins (`src/server/db/mongoose.ts`).
-- `src/components/ui` — generated shadcn components only (`npx shadcn@latest add <name>`).
-- `src/components/shared` — hand-written reusable app components.
-- `src/constants` — currently holds the hardcoded mock data the UI renders.
-- `src/integrations` — third-party setup (TanStack Query root provider, devtools).
+---
 
-Import with the `@/` alias. Prefer small typed modules; don't add abstractions before there are two real callers.
+## 12. Prohibited
 
-### Server functions vs API routes
+Do not:
 
-Normal CRUD uses `createServerFn` from `@tanstack/react-start`. API routes (`server.handlers` in a route file) are reserved for health checks, Twilio webhooks, CSV exports, raw file responses, and external callbacks. Do not duplicate CRUD across both.
-
-### Routing
-
-File-based via `@tanstack/react-start/plugin/vite`. `src/routeTree.gen.ts` is generated — never edit it, and it is excluded from Biome. `src/router.tsx` wires the router to the Query client (`setupRouterSsrQueryIntegration`) with `defaultPreload: "intent"`. `src/routes/__root.tsx` is a `shellComponent` that renders the whole `<html>` document, wraps children in `ReactLenis` (smooth scroll) and mounts TanStack Devtools.
-
-Note the route tree currently mixes flat and nested paths: `/dashboard` lives at `src/routes/dashboard.tsx` while surveys lives at `src/routes/app/surveys.tsx` (`/app/surveys`).
-
-### Current state: UI-first, no backend
-
-Every page renders static data exported from `src/constants/*.ts` (`dashboard.ts`, `surveys.ts`, `landing.ts`, `auth.ts`, `data.ts`). Auth forms validate with Zod then just `navigate({ to: "/dashboard" })`. When adding a feature, follow the existing shape (constants → feature component → route) unless you're explicitly wiring the backend.
-
-### Types
-
-Domain types (`Company`, `User`, `Survey`, `SurveyResponse`, `Communication`, `AuditLog`, nav/marketing shapes) are **ambient globals** declared in `type.d.ts` at the repo root — no import needed. UI-mock types live beside their data in `src/constants` and are imported normally. Be aware these overlap: `type.d.ts` declares a global `SurveyStatus` (`draft|published|archived`) while `src/constants/surveys.ts` exports a different `SurveyStatus` (`published|draft|closed`) for the mock table.
-
-### Tables
-
-`useDataTable` (`src/hooks/useDataTable.tsx`) owns all TanStack Table state (sorting, filters, visibility, row selection, pagination) and returns `{ table }`. Feature components define `ColumnDef[]` in a `useMemo`, use `DataTableColumnHeader` for sortable headers, and render `<DataTable table={table} />` from `@/components/shared/Table`. `DataTableConfig.tsx` augments TanStack's `ColumnMeta` with `label?: string`, used for view-options labels and header fallbacks.
-
-### Forms
-
-TanStack Form + Zod: `useForm({ defaultValues, validators: { onSubmit: schema } })`, fields rendered through `TanStackFormField` / `FormFieldType` from `@/components/shared/inputs/custom-form-field.tsx` (input, password with visibility toggle, checkbox). Validate user input at feature boundaries with Zod.
-
-### Styling
-
-Tailwind v4, CSS-first config in `src/styles.css`: oklch design tokens under `:root` / `.dark`, exposed to Tailwind via `@theme inline`. Always use semantic tokens (`bg-background`, `text-muted-foreground`, `border-border`, `text-chart-1`…`chart-5`) rather than raw colors. Merge classes with `cn()` from `@/lib/utils`.
-
-### Env vars
-
-Typed through `@t3-oss/env-core` in `src/env.ts`; client vars need the `VITE_` prefix. Import via `import { env } from "@/env"`. Secrets stay server-side. See `.env.example`; `npm run dev` loads `.env.local`.
-
-### Sentry
-
-Error collection is configured in `src/router.tsx`; `instrument.server.mjs` is preloaded in dev via `NODE_OPTIONS`. Instrument server functions by wrapping the handler body:
-
-```tsx
-import * as Sentry from "@sentry/tanstackstart-react";
-Sentry.startSpan({ name: "Loading surveys" }, async () => { /* ... */ });
-```
-
-## Code style
-
-Biome: double quotes, space indent, organize-imports on. `verbatimModuleSyntax` is on — use `import type` for type-only imports. `noUnusedLocals` / `noUnusedParameters` are errors; use `void x` when a binding must exist but is unused (the codebase does this).
-
-## Deployment
-
-Netlify (`netlify.toml`): build `vite build`, publish `dist/client`, Node 22. Server functions and API routes run as Netlify Functions. Do not require optional production services (Sentry, Twilio, Mongo) for local startup.
-
-## Docs and skills
-
-Short project docs live in `docs/` (`architecture.md`, `database.md`, `features.md`, `production-rules.md`, `deployment.md`); feature specs and plans in `docs/agentic/` and `docs/superpowers/plans/`. Project-local skills are in `.claude/skills/` — `architect` (plan before building), `imprint` (record UI patterns after building a component), `review`, `recover`, `remember`.
+- Expose or print secrets; commit credentials; modify `.env` values unnecessarily
+- Trust client-side identity for authorization, or break tenant isolation
+- Disable tests, or delete failing tests to obtain a green build
+- Suppress meaningful TypeScript errors, add blanket `any`, or disable lint rules globally
+- Replace working architecture without evidence
+- Introduce duplicate components, hooks, services, models, or utilities
+- Modify unrelated files, or reformat the repository wholesale
+- Rewrite git history, delete branches, or commit without being asked
+- Remove existing agents or skills
+- **Add Firebase dependencies, Firebase agent skills, Firebase plugins, or Firebase MCP integrations**
+- Claim success without verification
