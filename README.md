@@ -1,244 +1,367 @@
-Welcome to your new TanStack Start app! 
+# SurveyFlow
 
-# Getting Started
+Schema-driven survey platform. Build a survey once, publish it as a public link,
+collect responses from whitelisted recipients, and read the results back as
+analytics and exports — without hard-coding a single form.
 
-To run this application:
-
-```bash
-npm install
-npm run dev
+```
+Author  →  Publish  →  Distribute  →  Collect  →  Analyse
+editor     public link   link / QR / SMS   respondent   dashboards
+                                            pages       + exports
 ```
 
-# Building For Production
+Node/Express API, MongoDB via Mongoose, React 19 front end on Vite.
 
-To build this application for production:
+---
+
+## Contents
+
+- [Why it is built this way](#why-it-is-built-this-way)
+- [Repository layout](#repository-layout)
+- [Prerequisites](#prerequisites)
+- [Setup](#setup)
+- [Configuration](#configuration)
+- [Running](#running)
+- [Seed data](#seed-data)
+- [Domain model](#domain-model)
+- [HTTP surface](#http-surface)
+- [Screens](#screens)
+- [Authentication](#authentication)
+- [Design tokens](#design-tokens)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Keeping this document honest](#keeping-this-document-honest)
+
+---
+
+## Why it is built this way
+
+Three decisions shape most of the codebase:
+
+**Surveys are data, not code.** A survey is a document of sections and
+questions with rules attached. Nothing about a specific questionnaire is
+compiled into the app, so adding a question type is a renderer change rather
+than a migration.
+
+**Branching logic runs on both sides.** `server/utils/logicEngine.js` and
+`client/src/lib/utils/logicEngine.js` are deliberate twins. The client needs the
+rules to decide what to show next; the server needs the same rules to decide
+what it will accept. Keeping them in sync is a maintenance cost paid on purpose
+— if you change one, change the other, and the logic-engine unit tests will tell
+you when you have not.
+
+**Editor preview, public response, and response detail share one renderer.**
+A question looks and behaves the same in all three contexts because all three
+mount the same components against the same schema.
+
+---
+
+## Repository layout
+
+```
+SurveyFlow/
+├── client/                     React 19 + Vite — see client/README.md
+│   ├── src/app/                provider tree, router, context
+│   ├── src/routes/             file-based TanStack routes
+│   ├── src/pages/              route-level screens
+│   ├── src/components/         editor, renderer, analytics, shared, ui
+│   ├── src/lib/api/            axios modules, one per API domain
+│   ├── src/lib/queries/        TanStack Query hooks
+│   ├── src/lib/utils/          survey, logic, export, presentation helpers
+│   ├── src/stores/             zustand auth store
+│   ├── src/styles/theme.css    design tokens — the palette lives here
+│   ├── public/brand/logos/     SurveyFlow mark and wordmark
+│   └── tests/                  node:test unit specs, Playwright e2e
+├── server/
+│   ├── server.js               entry: middleware, /api mount, shutdown
+│   ├── config/                 database connection
+│   ├── routes/                 express routers, mounted by routes/index.js
+│   ├── controllers/            request handlers
+│   ├── services/               branding, email, http, upload
+│   ├── models/                 mongoose schemas
+│   ├── middleware/             auth, validation, request id, errors
+│   ├── utils/                  logging, responses, logicEngine, s3, paging
+│   ├── data/                   seed fixtures + IEQ dataset
+│   └── tests/                  unit + integration specs
+└── package.json                root scripts drive both halves
+```
+
+---
+
+## Prerequisites
+
+- Node.js 20 or newer
+- A MongoDB instance (local `mongod` or an Atlas cluster)
+
+---
+
+## Setup
 
 ```bash
-npm run build
+git clone https://github.com/Ericokim/SurveyFlow.git
+cd SurveyFlow
+
+npm install                    # API dependencies
+npm install --prefix client    # client dependencies
+
+cp .env.example .env           # then fill it in
 ```
+
+---
+
+## Configuration
+
+`.env` at the repository root configures the API. Vite reads that same file for
+the client and lets `client/.env*` override it; only `VITE_`-prefixed values
+reach browser code.
+
+| Variable | Required | Notes |
+|---|---|---|
+| `PORT` | no | API port. Defaults to `5001`. |
+| `NODE_ENV` | no | `development` or `production`. |
+| `MONGO_URI` | **yes** | MongoDB connection string. |
+| `JWT_SECRET` | **yes** | Signing secret, 256 bits or more. |
+| `JWT_EXPIRY` / `JWT_REFRESH_EXPIRY` | no | Token lifetimes. |
+| `FRONTEND_URL` | yes in prod | Client origin, used for CORS. |
+| `SMS_API_KEY` / `SMS_USERNAME` / `SMS_SENDER_ID` | no | SMS invitations. Leave blank to disable. |
+| `COMMS_API_URL` / `COMMS_APP_ID` | no | External comms API. Blank logs email to the console. |
+| `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_S3_BUCKET_NAME` | no | S3 asset storage. |
+| `DEV_BYPASS_AUTH` / `DEV_USER_ID` / `DEV_COMPANY_ID` | no | Development-only auth bypass. See [Authentication](#authentication). |
+| `VITE_API_URL` | no | API origin *without* `/api`; the axios client appends it. Unset means same-origin `/api`. |
+
+`.env` and `.env.local` are gitignored. Keep real credentials out of
+`.env.example`.
+
+---
+
+## Running
+
+```bash
+npm run dev        # API + client together, via concurrently
+npm run server     # API only, nodemon
+npm run client     # Vite dev server only
+npm start          # production API
+npm run build      # install client deps and build the client bundle
+```
+
+| Service | URL |
+|---|---|
+| API | `http://localhost:5001` |
+| Client | `http://localhost:5173` |
+| Health check | `GET http://localhost:5001/api/health` |
+
+---
+
+## Seed data
+
+```bash
+npm run data:import              # baseline companies, users, surveys
+npm run data:import:ieq          # Internet Experience Questionnaire dataset
+npm run data:import:ieq:publish  # ...and publish it immediately
+npm run data:destroy             # wipe seeded data
+```
+
+The IEQ dataset in `server/data/ieq.combined.master.json` doubles as a test
+fixture: it is a real questionnaire with non-trivial branching, so the
+logic-engine suites run against it rather than against toy input.
+
+---
+
+## Domain model
+
+| Model | Holds |
+|---|---|
+| `user` | Admin accounts and preferences. |
+| `company` | Workspace, branding, defaults. |
+| `survey` | Sections, questions, logic rules, publish state. |
+| `survey_version` | Immutable snapshot taken at publish time. |
+| `recipient` | Whitelist entry, invite status, blacklist flag. |
+| `response` | Submitted or in-progress answers. |
+| `communication` | SMS and email delivery log. |
+
+Versioning is what makes in-flight responses safe: publishing snapshots the
+survey, so editing a live survey cannot retroactively change what a respondent
+already saw.
+
+Supported question types: short text, long text, single choice, multiple
+choice, dropdown, rating, date.
+
+---
+
+## HTTP surface
+
+Everything mounts under `/api` from `server/routes/index.js`.
+
+| Router | Prefix | Covers |
+|---|---|---|
+| `auth.routes.js` | `/api/auth` | Register, login, current user, preferences, forgot/reset password. |
+| `company.routes.js` | `/api/company` | Profile, workspace settings, company logo upload and serve. |
+| `surveys.routes.js` | `/api/surveys` | CRUD, publish, close, duplicate, restore, survey logo, effective settings. |
+| `recipients.routes.js` | `/api/surveys/:id/recipients` | Create, bulk upload, stats, invite, blacklist, delete. |
+| `distribution.routes.js` | `/api/surveys/:id/sms` | Send invitations, sending stats, delivery logs. |
+| `responses.routes.js` | `/api/r/:publicId`, `/api/admin` | Public fetch, whitelist check, progress save, preview and live submit; admin list, detail, delete, recipient reset. |
+| `analytics.routes.js` | `/api/surveys/:id/analytics` | Survey and per-question analytics, response/recipient/respondent exports. |
+
+Request flow:
+
+```mermaid
+sequenceDiagram
+    participant UI as React page
+    participant Q as Query hook
+    participant AX as Axios client
+    participant EX as Express
+    participant DB as MongoDB
+
+    UI->>Q: needs server state
+    Q->>AX: HTTP request
+    AX->>EX: /api/...
+    EX->>EX: auth → validation → controller
+    EX->>DB: read / write
+    DB-->>EX: result
+    EX-->>AX: normalized envelope
+    AX-->>Q: cache update
+    Q-->>UI: render
+```
+
+---
+
+## Screens
+
+Routes are declared as files in `client/src/routes/` and compiled into
+`client/src/routeTree.gen.js` by `npm run route:generate`.
+
+Public — no session required:
+
+| Path | Screen |
+|---|---|
+| `/login`, `/register` | Authentication. |
+| `/forgot-password`, `/reset-password/$token` | Password recovery. |
+| `/r/$publicId` | Respondent survey page. |
+| `/r/$publicId/preview` | Read-only preview of a published survey. |
+| `/r/$publicId/test` | Test mode — submissions are not recorded. |
+| `/preview/draft` | Draft preview launched from the editor. |
+
+Authenticated workspace:
+
+| Path | Screen |
+|---|---|
+| `/` | Dashboard. |
+| `/surveys` | Survey list. |
+| `/surveys/$id` | Survey editor and detail. |
+| `/settings` | Workspace and branding settings. |
+
+---
+
+## Authentication
+
+The API issues a JWT on login. The client keeps it locally, the axios
+interceptor attaches it to every request, and a 401 outside the public
+respondent routes clears the session and returns to `/login`.
+
+Admin routes sit behind server auth middleware. Some routers honour a
+development-only bypass driven by `DEV_BYPASS_AUTH`, `DEV_USER_ID`, and
+`DEV_COMPANY_ID`, which exists so local work and automated runs do not need a
+login round-trip. **Set `DEV_BYPASS_AUTH=false` for anything reachable from a
+network.**
+
+---
+
+## Design tokens
+
+The palette lives in exactly one file: `client/src/styles/theme.css`, expressed
+in `oklch`. SurveyFlow is a coral / warm-orange primary with a soft-blue
+analytics accent, defined for light (`:root`) and dark (`.dark`).
+
+| Token | Role |
+|---|---|
+| `--primary`, `--primary-hover`, `--primary-foreground` | Coral brand actions. |
+| `--accent`, `--accent-foreground` | Soft-blue analytics accent. |
+| `--background`, `--foreground`, `--card`, `--popover` | Surfaces and text. |
+| `--chart-1` … `--chart-5` | Chart series. Lead pair is blue + coral. |
+| `--sidebar-*` | Sidebar surfaces. |
+| `--surveyflow-*` | Aliases consumed by the decorative helpers. |
+| `--radius` | Corner-radius scale root, `0.75rem`. |
+
+Tailwind's `@theme inline` block re-exports each token as a utility colour, so
+components write `bg-primary` and never a hex value. Change the palette in
+`:root` / `.dark` and it propagates everywhere — that is the whole point, so
+please do not reintroduce literal colours.
+
+Helpers layered on the tokens: `.sf-page`, `.sf-gradient-primary`,
+`.sf-auth-panel`. Brand artwork lives in `client/public/brand/logos/`.
+
+---
 
 ## Testing
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+Unit tests use the Node built-in test runner, so there is no extra framework to
+install. End-to-end coverage is Playwright, reported through Allure.
 
 ```bash
-npm run test
+npm test                 # unit suites, client + server
+npm run test:integration # server integration suite — needs a reachable MongoDB
+npm run test:e2e         # Playwright
+npm run test:all         # unit + e2e
+npm run qa:all           # test:all, then build the Allure report
+npm run qa:open          # open the report
 ```
 
-## Styling
+Covered areas: survey lifecycle and publishing, survey editing, question and
+response validation, progress save, preview submission, recipient upload and
+status, analytics export, duplication and cloning, logic-engine branching and
+section skips, public response flows, and branding settings.
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+Last verified run: 73 client unit tests and 38 server unit tests passing.
 
-### Removing Tailwind CSS
+---
 
-If you prefer not to use Tailwind CSS:
+## Deployment
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
+The API is a plain Node/Express process — give it the environment variables and
+a reachable MongoDB and it runs anywhere. A root `vercel.json` is present for
+client hosting.
 
 ```bash
-npm run lint
-npm run format
-npm run check
+npm install
+npm install --prefix client
+npm run build     # client bundle → client/dist
+npm start         # API
 ```
 
+```mermaid
+flowchart LR
+    Build[npm run build] --> Static[client/dist]
+    Static --> CDN[Static host]
+    API[npm start] --> Express[Express API]
+    Express --> Mongo[(MongoDB)]
+    Express --> SMS[SMS provider]
+    Express --> S3[S3 assets]
+    CDN -->|/api| Express
+```
 
-## Deploy to Netlify
+---
 
-This project ships with `netlify.toml` configured for a Netlify site:
+## Keeping this document honest
 
-1. Push this repo to GitHub
-2. Visit https://app.netlify.com/start and import the repo
-3. Netlify auto-detects the build (`vite build` → `dist/client`)
-4. Open **Site settings → Environment variables** and add anything from `.env.example` that needs a real value in production
-5. Trigger the first deploy
+Update this README in the same commit that changes any of:
 
-Server functions and API routes run on Netlify Functions. For lower-latency request handling, see Netlify Edge Functions: https://docs.netlify.com/edge-functions/overview.
+- Setup steps or environment variable names
+- npm scripts
+- Route paths or API endpoint groups
+- Auth behaviour, including the development bypass
+- Survey schema, question types, or logic semantics
+- Design tokens in `client/src/styles/theme.css`
+- Test commands or deployment configuration
 
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+Before committing documentation or setup changes:
 
 ```bash
-npx shadcn@latest add button
+npm test
+npm run build
 ```
 
+---
 
-## T3Env
+## License
 
-- You can use T3Env to add type safety to your environment variables.
-- Add environment variables to `src/env.ts`.
-- Use the environment variables in your code.
-
-### Usage
-
-```ts
-import { env } from "@/env";
-
-console.log(env.VITE_APP_TITLE);
-```
-
-
-
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+ISC
