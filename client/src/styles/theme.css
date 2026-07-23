@@ -17,18 +17,30 @@
   --popover-foreground: oklch(0.2809 0 0);
   --primary: oklch(0.6802 0.1902 32.0008);
   --primary-hover: oklch(0.6302 0.1902 32.0008);
+  /* KNOWN ISSUE, accepted deliberately: white on this coral measures 3.13:1,
+     below the 4.5:1 AA floor for the 14px labels on primary buttons.
+     Alternatives were weighed and rejected — near-black ink reaches 5.73:1 but
+     changes the button's look, and darkening the coral to pass with white
+     collides with --destructive (1.02 contrast, effectively identical
+     luminance), which would make delete and confirm hard to tell apart.
+     The brand look was chosen over the contrast gain. Revisit if the palette
+     is ever reworked. */
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.967 0.0015 286.375);
   --secondary-foreground: oklch(0.2809 0 0);
   --muted: oklch(0.967 0.0015 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
+  /* Was 0.552 — 4.83:1 on white but only ~4.4:1 on --muted, and it carries most
+     secondary text in the product. 0.50 clears AA on both. */
+  --muted-foreground: oklch(0.5 0.016 285.938);
   --accent: oklch(0.9204 0.0203 238.6791);
   --accent-foreground: oklch(0.3488 0.0483 245);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.6802 0.1902 32.0008);
+  /* Focus ring only. Deeper than --primary so it clears the 3:1 non-text floor
+     against --background (4.49:1); the brand coral itself managed 2.99:1. */
+  --ring: oklch(0.58 0.1902 32.0008);
   /* lead pair: blue (chart-1) + coral (chart-2) */
   --chart-1: oklch(0.6231 0.188 259.8145);
   --chart-2: oklch(0.6802 0.1902 32.0008);
@@ -63,10 +75,14 @@
   --popover-foreground: oklch(0.9851 0 0);
   --primary: oklch(0.6802 0.1902 32.0008);
   --primary-hover: oklch(0.7302 0.1902 32.0008);
+  /* Same accepted trade-off as light mode — see the note in :root. */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.2686 0 0);
+  /* Were both oklch(0.2686), identical to --card — so secondary buttons,
+     skeletons (bg-muted/70) and table-row hovers were invisible on any Card in
+     dark mode. Lifted one step so they read against the card surface. */
+  --secondary: oklch(0.32 0 0);
   --secondary-foreground: oklch(0.9851 0 0);
-  --muted: oklch(0.2686 0 0);
+  --muted: oklch(0.32 0 0);
   --muted-foreground: oklch(0.7155 0 0);
   --accent: oklch(0.3211 0.0387 240);
   --accent-foreground: oklch(0.9204 0.0203 238.6791);

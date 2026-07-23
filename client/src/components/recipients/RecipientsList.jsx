@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import MetricCard from "../shared/MetricCard";
+import { SurveyMetricCard } from "../dashboard/SurveyMetricCard";
 import { Skeleton } from "../ui/skeleton";
 import {
   DropdownMenu,
@@ -1002,45 +1002,74 @@ export function RecipientsList({
           </>
         ) : (
           <>
-            <MetricCard
-              title="TOTAL RECIPIENTS"
+            <SurveyMetricCard
+              label="Total recipients"
               value={stats?.total || 0}
-              description={<>All recipients</>}
+              caption="Invite funnel"
               icon={Users}
-              badge={{ variant: "outline", text: "Total" }}
-              className="-py-4 shadow-none"
+              accent="blue"
+              viz={{
+                type: "segments",
+                label: `${stats?.pending || 0} pending, ${stats?.invited || 0} invited, ${stats?.in_progress || 0} in progress, ${stats?.completed || 0} completed`,
+                parts: [
+                  { key: "pending", value: stats?.pending || 0, className: "bg-chart-3" },
+                  { key: "invited", value: stats?.invited || 0, className: "bg-chart-5" },
+                  { key: "in_progress", value: stats?.in_progress || 0, className: "bg-chart-2" },
+                  { key: "completed", value: stats?.completed || 0, className: "bg-chart-4" },
+                ],
+              }}
             />
-            <MetricCard
-              title="PENDING"
+            <SurveyMetricCard
+              label="Pending"
               value={stats?.pending || 0}
-              description={<>Awaiting invite</>}
+              caption="Awaiting invite"
               icon={Clock}
-              badge={{ variant: "outline", text: "Pending" }}
-              className="-py-4 shadow-none"
+              accent="amber"
+              viz={{
+                type: "meter",
+                value: stats?.pending || 0,
+                total: stats?.total || 0,
+                label: `${stats?.pending || 0} of ${stats?.total || 0} recipients await an invite`,
+              }}
             />
-            <MetricCard
-              title="INVITED"
+            <SurveyMetricCard
+              label="Invited"
               value={stats?.invited || 0}
-              description={<>Sent invitations</>}
+              caption="Sent invitations"
               icon={Mail}
-              badge={{ variant: "outline", text: "Active" }}
-              className="-py-4 shadow-none"
+              accent="violet"
+              viz={{
+                type: "meter",
+                value: stats?.invited || 0,
+                total: stats?.total || 0,
+                label: `${stats?.invited || 0} of ${stats?.total || 0} recipients invited`,
+              }}
             />
-            <MetricCard
-              title="IN PROGRESS"
+            <SurveyMetricCard
+              label="In progress"
               value={stats?.in_progress || 0}
-              description={<>Saved drafts</>}
+              caption="Saved drafts"
               icon={Clock}
-              badge={{ variant: "outline", text: "Resume" }}
-              className="-py-4 shadow-none"
+              accent="coral"
+              viz={{
+                type: "meter",
+                value: stats?.in_progress || 0,
+                total: stats?.total || 0,
+                label: `${stats?.in_progress || 0} of ${stats?.total || 0} recipients started`,
+              }}
             />
-            <MetricCard
-              title="COMPLETED"
+            <SurveyMetricCard
+              label="Completed"
               value={stats?.completed || 0}
-              description={<>Finished surveys</>}
+              caption="Finished surveys"
               icon={CheckCircle2}
-              badge={{ variant: "outline", text: "Done" }}
-              className="-py-4 shadow-none"
+              accent="green"
+              viz={{
+                type: "meter",
+                value: stats?.completed || 0,
+                total: stats?.total || 0,
+                label: `${stats?.completed || 0} of ${stats?.total || 0} recipients finished`,
+              }}
             />
           </>
         )}

@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { QuestionRenderer } from "../renderer/QuestionRenderer";
+import { SurveyHeaderWave } from "./SurveyHeaderWave";
+import { brandContrastVars } from "@/lib/utils/brandContrast";
 import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
 import { Alert, AlertDescription } from "../ui/alert";
@@ -1901,12 +1903,10 @@ export function ResponseForm({
       className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100"
       style={{
         fontFamily: survey.fontFamily || "Inter",
-        ...(brandColor
-          ? {
-              "--primary": brandColor,
-              "--ring": brandColor,
-            }
-          : {}),
+        // Derives a readable foreground and a card-legible ink from whatever
+        // brand colour the survey owner picked, instead of assuming white reads
+        // on it. See lib/utils/brandContrast.js for the measured failures.
+        ...brandContrastVars(brandColor),
       }}
     >
       {/* Test Mode Banner */}
@@ -1926,10 +1926,11 @@ export function ResponseForm({
 
       {/* Header */}
       <div
-        className="text-white py-4 sm:py-5 px-4"
+        className="relative isolate overflow-hidden text-[var(--primary-foreground,#fff)] px-4 pt-4 pb-16 sm:pt-5 sm:pb-24"
         style={brandColor ? { backgroundColor: brandColor } : undefined}
       >
-        <div className="max-w-6xl mx-auto">
+        <SurveyHeaderWave />
+        <div className="relative max-w-6xl mx-auto">
           <div className="flex items-center gap-3">
             {survey.logo && (
               <div className="shrink-0 bg-white rounded-lg p-2.5">
@@ -1949,12 +1950,14 @@ export function ResponseForm({
           </div>
           {survey.description && (
             <RichTextContent
-              className="markdown-editor-content mt-1 text-sm leading-relaxed text-white/90 [&_a]:text-white [&_a]:underline [&_blockquote]:border-white/30 [&_blockquote]:text-white/90 [&_strong]:text-white"
+              // Inherits the derived foreground rather than forcing white, so a
+              // pale brand colour keeps the description legible.
+              className="markdown-editor-content mt-1 text-sm leading-relaxed opacity-90 [&_a]:underline [&_a]:text-current [&_blockquote]:border-current/30 [&_blockquote]:text-current [&_strong]:text-current"
               value={survey.description}
             />
           )}
           {mode === "preview" && (
-            <div className="mt-2 flex items-center gap-2 text-white/90 bg-white/10 rounded-md px-3 py-1.5">
+            <div className="mt-2 flex items-center gap-2 bg-current/10 rounded-md px-3 py-1.5">
               <Info className="h-4 w-4 shrink-0" />
               <span className="text-sm">
                 <strong>Preview Mode:</strong> Responses will not be saved.
@@ -2120,11 +2123,15 @@ export function ResponseForm({
                   style={
                     brandColor ? { backgroundColor: brandColor } : undefined
                   }
-                  className="text-white min-w-0 sm:min-w-30"
+                  // Was `text-white`, which tailwind-merge let win over
+                  // text-primary-foreground — so the label stayed white even on
+                  // a pale brand. "Submit Survey" failed AA on the shipped
+                  // default coral (3.10:1) before this.
+                  className="text-[var(--primary-foreground,#fff)] min-w-0 sm:min-w-30"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
                       Submitting...
                     </>
                   ) : shouldShowSubmitCta ? (

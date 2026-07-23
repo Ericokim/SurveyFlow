@@ -90,9 +90,13 @@ export function EditorTopBar({
       )}
     >
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-0 py-1 mb-2">
-        <div className="rounded-lg border border-border bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card px-3 sm:px-6 py-3 sm:py-4">
+          {/* Signal rail + wash, matching the surveys dashboard panel. */}
+          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/60 to-transparent" />
+          <span className="pointer-events-none absolute inset-0 bg-linear-to-b from-primary/4 to-transparent" />
+
           {/* Header Row */}
-          <div className="flex flex-col items-stretch gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div className="relative flex flex-col items-stretch gap-3 lg:flex-row lg:items-start lg:justify-between">
             {/* Back Navigation + Title */}
             <div className="flex items-start gap-2.5 sm:gap-3 min-w-0 w-full lg:w-auto lg:flex-1">
               <TooltipProvider>
@@ -102,7 +106,7 @@ export function EditorTopBar({
                       variant="ghost"
                       size="icon"
                       onClick={() => navigate({ to: "/surveys" })}
-                      className="shrink-0 mt-0.5 sm:mt-1.5 h-10 w-10 bg-primary/10 hover:bg-primary/15 text-foreground hover:scale-105 transition-all duration-200"
+                      className="shrink-0 mt-0.5 sm:mt-1 size-10 rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/20 hover:bg-primary/15 hover:text-primary motion-safe:hover:scale-105 transition-all duration-200"
                     >
                       <ArrowLeft className="w-4 h-4" />
                     </Button>
@@ -112,7 +116,7 @@ export function EditorTopBar({
               </TooltipProvider>
 
               <div className="min-w-0 w-full space-y-0.5">
-                <h1 className="text-lg sm:text-2xl font-bold leading-tight text-foreground line-clamp-2 sm:truncate max-w-full">
+                <h1 className="text-lg sm:text-2xl font-semibold leading-tight tracking-tight text-foreground line-clamp-2 sm:truncate max-w-full">
                   {headerTitle}
                 </h1>
 
@@ -291,7 +295,7 @@ export function EditorTopBar({
           </div>
 
           {/* Metadata Row */}
-          <div className="mt-3 -mx-1 px-1 flex items-center gap-2 overflow-x-auto pb-1 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="relative mt-3 -mx-1 px-1 flex items-center gap-2 overflow-x-auto pb-1 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="shrink-0">
