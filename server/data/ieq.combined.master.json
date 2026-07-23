@@ -1,0 +1,2358 @@
+{
+  "id": "ieq_master_combined_v1",
+  "purpose": "Single reference view combining seed + create payload + UI/UX behavior contract.",
+  "sharedSchema": {
+    "title": "Internet Experience Questionnaire",
+    "description": "Survey to understand internet usage, performance, and future demand.",
+    "themeColor": "#1d4ed8",
+    "thankYouMessage": "Thank you for sharing your internet experience!",
+    "sections": [
+      {
+        "id": "profile",
+        "title": "Respondent Profile & Context",
+        "order": 1
+      },
+      {
+        "id": "usage",
+        "title": "Internet Access & Usage Characteristics",
+        "order": 2
+      },
+      {
+        "id": "performance",
+        "title": "Service Performance & Tolerance Levels",
+        "order": 3
+      },
+      {
+        "id": "value",
+        "title": "Value, Cost & Decision Trade-offs",
+        "order": 4
+      },
+      {
+        "id": "mdus",
+        "title": "Multi-Dwelling Units (MDUs - Apartments / Estates)",
+        "order": 5
+      },
+      {
+        "id": "sdus",
+        "title": "Single-Dwelling Units (SDUs - Standalone Homes)",
+        "order": 6
+      },
+      {
+        "id": "enterprise",
+        "title": "Enterprises (Offices / Commercial Premises)",
+        "order": 7
+      },
+      {
+        "id": "future",
+        "title": "Cross-Segment Future Demand and Readiness",
+        "order": 8
+      },
+      {
+        "id": "insight",
+        "title": "High-Value Insight",
+        "order": 9
+      }
+    ],
+    "questions": [
+      {
+        "id": "q1",
+        "type": "dropdown",
+        "title": "What is your location within Westlands?",
+        "required": true,
+        "sectionId": "profile",
+        "order": 1,
+        "options": [
+          "Westlands CBD",
+          "Parklands",
+          "Highridge",
+          "Spring Valley",
+          "Riverside",
+          "Mountain View",
+          "Kangemi",
+          "Loresho",
+          "Kyuna",
+          "Kitisuru"
+        ]
+      },
+      {
+        "id": "q2",
+        "type": "single_choice",
+        "title": "What type is your premises?",
+        "required": true,
+        "sectionId": "profile",
+        "order": 2,
+        "options": [
+          "Multi-Dwelling Unit (Apartment/Estate)",
+          "Single-Dwelling Unit (Standalone house)",
+          "Enterprise (Office/Commercial facility)"
+        ]
+      },
+      {
+        "id": "q3",
+        "type": "single_choice",
+        "title": "What is your role in internet or IT-related decisions?",
+        "required": true,
+        "sectionId": "profile",
+        "order": 3,
+        "options": [
+          "Primary decision-maker (Final authority)",
+          "Influencer/Advisor (Recommend but not final say)",
+          "End user only (No decision influence)"
+        ]
+      },
+      {
+        "id": "q4",
+        "type": "single_choice",
+        "title": "Who is your Internet Service Provider (ISP)?",
+        "required": true,
+        "sectionId": "profile",
+        "order": 4,
+        "options": [
+          "Safaricom",
+          "Airtel",
+          "Jamii Telecom",
+          "Zuku",
+          "Liquid/Africa Data Centres",
+          "Other"
+        ],
+        "hasOther": true
+      },
+      {
+        "id": "q5",
+        "type": "single_choice",
+        "title": "Approximately how many people regularly use the internet connection at this premises?",
+        "required": true,
+        "sectionId": "profile",
+        "order": 5,
+        "options": [
+          "2-3 people",
+          "4-7 people",
+          "8-10 people",
+          "More than 10 people"
+        ]
+      },
+      {
+        "id": "q6",
+        "type": "multiple_choice",
+        "title": "Which types of devices are regularly connected? (Select all that apply)",
+        "required": true,
+        "sectionId": "profile",
+        "order": 6,
+        "options": [
+          "Smartphones",
+          "Laptops / Desktops",
+          "Smart TVs / Streaming devices",
+          "Gaming consoles",
+          "Smart home / IoT devices (CCTV, sensors, etc)"
+        ]
+      },
+      {
+        "id": "q7",
+        "type": "multiple_choice",
+        "title": "Type of internet connection used (Select all that apply)",
+        "required": true,
+        "sectionId": "usage",
+        "order": 1,
+        "options": [
+          "Fibre",
+          "Fixed Wireless",
+          "Mobile Broadband (4G/5G)",
+          "Satellite",
+          "Other"
+        ],
+        "hasOther": true
+      },
+      {
+        "id": "q8",
+        "type": "single_choice",
+        "title": "Subscribed or estimated bandwidth capacity",
+        "required": true,
+        "sectionId": "usage",
+        "order": 2,
+        "options": [
+          "Less than 10 Mbps",
+          "10-50 Mbps",
+          "50-100 Mbps",
+          "100-500 Mbps",
+          "More than 500 Mbps",
+          "Not Sure"
+        ]
+      },
+      {
+        "id": "q9",
+        "type": "multiple_choice",
+        "title": "Peak usage periods (Select all that apply)",
+        "required": true,
+        "sectionId": "usage",
+        "order": 3,
+        "options": [
+          "Morning (6am-12pm)",
+          "Afternoon (12pm-6pm)",
+          "Evening (6pm-12am)",
+          "Overnight (12am-6am)"
+        ]
+      },
+      {
+        "id": "q10",
+        "type": "single_choice",
+        "title": "Compared to two years ago, your internet usage is:",
+        "required": true,
+        "sectionId": "usage",
+        "order": 4,
+        "options": [
+          "Much lower",
+          "Slightly lower",
+          "About the same",
+          "Higher",
+          "Significantly higher"
+        ]
+      },
+      {
+        "id": "q11",
+        "type": "single_choice",
+        "title": "How often do internet disruptions affect your activities?",
+        "required": true,
+        "sectionId": "performance",
+        "order": 1,
+        "options": [
+          "Never",
+          "Rarely (Monthly or less)",
+          "Occasionally (Weekly)",
+          "Frequently (Daily)"
+        ]
+      },
+      {
+        "id": "q12",
+        "type": "multiple_choice",
+        "title": "Which issue makes internet performance unacceptable for you? (Select all that apply)",
+        "required": true,
+        "sectionId": "performance",
+        "order": 2,
+        "options": [
+          "Low speeds",
+          "High latency",
+          "Frequent outages",
+          "Poor customer support",
+          "Inconsistent performance during peak hours",
+          "Other"
+        ],
+        "hasOther": true
+      },
+      {
+        "id": "q13",
+        "type": "single_choice",
+        "title": "How much performance variation can you tolerate during peak hours?",
+        "required": true,
+        "sectionId": "performance",
+        "order": 3,
+        "options": [
+          "None",
+          "Minor slowdowns",
+          "Significant slowdowns",
+          "Performance consistency not important"
+        ]
+      },
+      {
+        "id": "q14",
+        "type": "single_choice",
+        "title": "How do you perceive your current internet cost?",
+        "required": true,
+        "sectionId": "value",
+        "order": 1,
+        "options": [
+          "Overpriced",
+          "Fairly priced",
+          "Underpriced for the performance",
+          "Not sure"
+        ]
+      },
+      {
+        "id": "q15",
+        "type": "multiple_choice",
+        "title": "What would you justify paying more for? (Select up to 3)",
+        "required": true,
+        "sectionId": "value",
+        "order": 2,
+        "options": [
+          "Guaranteed uptime",
+          "Faster fault resolution",
+          "Improved security",
+          "Bundled digital services",
+          "Local technical support",
+          "More bandwidth capacity"
+        ],
+        "validation": {
+          "minSelections": 1,
+          "maxSelections": 3
+        }
+      },
+      {
+        "id": "q16",
+        "type": "single_choice",
+        "title": "If forced to choose, which do you prioritize most?",
+        "required": true,
+        "sectionId": "value",
+        "order": 3,
+        "options": [
+          "Lower cost",
+          "Consistent performance",
+          "Scalability for future needs",
+          "Integrated digital services"
+        ]
+      },
+      {
+        "id": "q17",
+        "type": "single_choice",
+        "title": "Approximately how much do you currently pay per month for internet connectivity",
+        "required": true,
+        "sectionId": "value",
+        "order": 4,
+        "options": [
+          "Less than KES 1,000",
+          "KES 1,000 - KES 2,500",
+          "KES 2,500 - KES 4,000",
+          "KES 4,000 - KES 6,000",
+          "KES 6,000 - KES 10,000",
+          "Above KES 10,000"
+        ]
+      },
+      {
+        "id": "q18",
+        "type": "single_choice",
+        "title": "What is the size of your organization?",
+        "required": true,
+        "sectionId": "mdus",
+        "order": 1,
+        "options": [
+          "Micro (Less than 10 employees)",
+          "Small (10-49 employees)",
+          "Medium (50-100 employees)",
+          "Large (More than 100 employees)"
+        ]
+      },
+      {
+        "id": "q19",
+        "type": "single_choice",
+        "title": "What best describes the building's internet setup?",
+        "required": true,
+        "sectionId": "mdus",
+        "order": 2,
+        "options": [
+          "One shared connection for the entire building",
+          "Individual connections per unit",
+          "Combination of shared and individual connections",
+          "Not sure"
+        ]
+      },
+      {
+        "id": "q20",
+        "type": "single_choice",
+        "title": "Who is responsible for choosing the internet provider for the building?",
+        "required": true,
+        "sectionId": "mdus",
+        "order": 3,
+        "options": [
+          "Building Management",
+          "Individual tenants/owners",
+          "Property developer",
+          "ISP recommendation"
+        ]
+      },
+      {
+        "id": "q21",
+        "type": "long_text",
+        "title": "What is the biggest internet-related challenge in your building?",
+        "required": true,
+        "sectionId": "mdus",
+        "order": 4
+      },
+      {
+        "id": "q22",
+        "type": "single_choice",
+        "title": "How willing would residents be to adopt a managed building-wide internet solution?",
+        "required": true,
+        "sectionId": "mdus",
+        "order": 5,
+        "options": [
+          "Not willing",
+          "Slightly willing",
+          "Moderately willing",
+          "Very willing"
+        ]
+      },
+      {
+        "id": "q23",
+        "type": "multiple_choice",
+        "title": "Which value-added services would be attractive in a building-wide package? (Select up to 2)",
+        "required": true,
+        "sectionId": "mdus",
+        "order": 6,
+        "options": [
+          "Guaranteed minimum speeds",
+          "Centralized customer support",
+          "CCTV / smart security integration",
+          "Bundled streaming or cloud services",
+          "Lower per-unit cost"
+        ],
+        "validation": {
+          "minSelections": 1,
+          "maxSelections": 2
+        }
+      },
+      {
+        "id": "q24",
+        "type": "single_choice",
+        "title": "How reliable is your current internet connection at home?",
+        "required": true,
+        "sectionId": "sdus",
+        "order": 1,
+        "options": [
+          "Very unreliable",
+          "Somewhat unreliable",
+          "Reliable",
+          "Very reliable"
+        ]
+      },
+      {
+        "id": "q25",
+        "type": "single_choice",
+        "title": "Which factor most influences your choice of internet provider?",
+        "required": true,
+        "sectionId": "sdus",
+        "order": 2,
+        "options": [
+          "Price",
+          "Speed",
+          "Reliability",
+          "Customer support",
+          "Availability in my area"
+        ]
+      },
+      {
+        "id": "q26",
+        "type": "single_choice",
+        "title": "Which household activity consumes the most bandwidth?",
+        "required": true,
+        "sectionId": "sdus",
+        "order": 3,
+        "options": [
+          "Streaming (Netflix, YouTube, etc.)",
+          "Remote work / video meetings",
+          "Online learning",
+          "Gaming",
+          "Smart home / IoT devices"
+        ]
+      },
+      {
+        "id": "q27",
+        "type": "rating",
+        "title": "How likely are you to upgrade your internet plan in the next 12 months? (1 = Very Unlikely, 5 = Very Likely)",
+        "required": true,
+        "sectionId": "sdus",
+        "order": 4,
+        "ratingScale": 5
+      },
+      {
+        "id": "q28",
+        "type": "single_choice",
+        "title": "Would you consider a bundled home package (internet + TV + cloud storage + security + smart home solutions)?",
+        "required": true,
+        "sectionId": "sdus",
+        "order": 5,
+        "options": [
+          "Yes",
+          "No",
+          "Maybe"
+        ]
+      },
+      {
+        "id": "q29",
+        "type": "single_choice",
+        "title": "How critical is internet availability to daily business operations?",
+        "required": true,
+        "sectionId": "enterprise",
+        "order": 1,
+        "options": [
+          "Not critical",
+          "Important",
+          "Very critical",
+          "Business cannot operate without it"
+        ]
+      },
+      {
+        "id": "q30",
+        "type": "single_choice",
+        "title": "Does your organization have redundance or backup connectivity?",
+        "required": true,
+        "sectionId": "enterprise",
+        "order": 2,
+        "options": [
+          "Yes (Full Redundancy)",
+          "Partial redundancy (e.g. Mobile Failover, Secondary Fibre)",
+          "No redundancy"
+        ]
+      },
+      {
+        "id": "q31",
+        "type": "single_choice",
+        "title": "Which issue poses the highest business risk?",
+        "required": true,
+        "sectionId": "enterprise",
+        "order": 3,
+        "options": [
+          "Downtime",
+          "Data security threats",
+          "Latency to cloud platforms",
+          "Limited scalability",
+          "High connectivity costs",
+          "Limited Options"
+        ]
+      },
+      {
+        "id": "q32",
+        "type": "single_choice",
+        "title": "Who is responsible for IT and connectivity decisions?",
+        "required": true,
+        "sectionId": "enterprise",
+        "order": 4,
+        "options": [
+          "In-house IT team",
+          "External IT consultant",
+          "Management",
+          "ISP-managed",
+          "Available ISP in the area"
+        ]
+      },
+      {
+        "id": "q33",
+        "type": "single_choice",
+        "title": "What infrastructure improvement would most benefit your business?",
+        "required": true,
+        "sectionId": "enterprise",
+        "order": 5,
+        "options": [
+          "Higher-capacity links",
+          "Lower latency to cloud services",
+          "Edge computing / local hosting",
+          "Better SLA and support",
+          "Predictive monitoring"
+        ]
+      },
+      {
+        "id": "q34",
+        "type": "single_choice",
+        "title": "How do you expect your internet and digital service needs to change in the next 2-3 years?",
+        "required": true,
+        "sectionId": "future",
+        "order": 1,
+        "options": [
+          "Decrease",
+          "Remain the same",
+          "Increase moderately",
+          "Increase significantly"
+        ]
+      },
+      {
+        "id": "q35",
+        "type": "rating",
+        "title": "How confident are you that your current provider can meet future demand? (1 = Not Confident, 5 = Very Confident)",
+        "required": true,
+        "sectionId": "future",
+        "order": 2,
+        "ratingScale": 5
+      },
+      {
+        "id": "q36",
+        "type": "single_choice",
+        "title": "Would AI-driven insights (usage forecasts, proactive fault detection) influence your choice of provider?",
+        "required": true,
+        "sectionId": "future",
+        "order": 3,
+        "options": [
+          "Yes",
+          "No",
+          "Maybe"
+        ]
+      },
+      {
+        "id": "q37",
+        "type": "long_text",
+        "title": "In one or two sentences, describe what the biggest limitation of your current internet or digital services is?",
+        "required": true,
+        "sectionId": "insight",
+        "order": 1
+      },
+      {
+        "id": "q38",
+        "type": "long_text",
+        "title": "What is the biggest challenge you face with your Internet Service Provider (ISP)?",
+        "required": true,
+        "sectionId": "insight",
+        "order": 2
+      },
+      {
+        "id": "q39",
+        "type": "rating",
+        "title": "Overall, how satisfied are you with your current Internet Service Provider? (1= Very dissatisfied, 5 = Very satisfied)",
+        "required": true,
+        "sectionId": "insight",
+        "order": 3,
+        "ratingScale": 5
+      }
+    ],
+    "flowRules": [
+      {
+        "questionId": "q2",
+        "rules": [
+          {
+            "value": "Multi-Dwelling Unit (Apartment/Estate)",
+            "action": "show_section",
+            "target": "mdus"
+          },
+          {
+            "value": "Single-Dwelling Unit (Standalone house)",
+            "action": "show_section",
+            "target": "sdus"
+          },
+          {
+            "value": "Enterprise (Office/Commercial facility)",
+            "action": "show_section",
+            "target": "enterprise"
+          }
+        ]
+      },
+      {
+        "questionId": "q6",
+        "rules": [
+          {
+            "valueContains": "Smart home / IoT devices (CCTV, sensors, etc)",
+            "action": "show_question",
+            "target": "q12"
+          }
+        ]
+      }
+    ],
+    "validationRules": {
+      "global": {
+        "requiredMessage": "This question is required.",
+        "maxTextLength": 2000
+      },
+      "perQuestion": {
+        "q15": {
+          "minSelections": 1,
+          "maxSelections": 3
+        },
+        "q23": {
+          "minSelections": 1,
+          "maxSelections": 2
+        }
+      }
+    },
+    "visibilityRules": [],
+    "navigationRules": []
+  },
+  "uiUxBehavior": {
+    "responseForm": {
+      "requiredMessage": "This question is required.",
+      "multiStep": true,
+      "showProgress": true
+    },
+    "branching": {
+      "driverQuestionId": "q2",
+      "behavior": "Premises type selects one branch section (mdus/sdus/enterprise) then continues to shared sections."
+    },
+    "conditionalVisibility": {
+      "questionId": "q12",
+      "dependsOnQuestionId": "q6",
+      "rule": "show when selected answers include \"Smart home / IoT devices (CCTV, sensors, etc)\""
+    },
+    "multipleChoice": {
+      "q15": {
+        "minSelections": 1,
+        "maxSelections": 3
+      },
+      "q23": {
+        "minSelections": 1,
+        "maxSelections": 2
+      },
+      "behavior": [
+        "Disable further selections when maxSelections is reached.",
+        "Allow uncheck and reselection.",
+        "If option \"None\" exists, it is exclusive and cannot be combined with other options.",
+        "If \"Other\" is selected, companion text is required where allowOther=true."
+      ]
+    },
+    "dropdown": {
+      "behavior": [
+        "Uses placeholder when unanswered.",
+        "Supports allowOther where configured.",
+        "Applies survey theme color to focus/highlight state when themeColor is set."
+      ]
+    }
+  },
+  "runtimeOutputs": {
+    "createPayload": {
+      "title": "Internet Experience Questionnaire",
+      "description": "Survey to understand internet usage, performance, and future demand.",
+      "questions": [
+        {
+          "id": "q1",
+          "type": "dropdown",
+          "title": "What is your location within Westlands?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 1,
+          "options": [
+            "Westlands CBD",
+            "Parklands",
+            "Highridge",
+            "Spring Valley",
+            "Riverside",
+            "Mountain View",
+            "Kangemi",
+            "Loresho",
+            "Kyuna",
+            "Kitisuru"
+          ]
+        },
+        {
+          "id": "q2",
+          "type": "single_choice",
+          "title": "What type is your premises?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 2,
+          "options": [
+            "Multi-Dwelling Unit (Apartment/Estate)",
+            "Single-Dwelling Unit (Standalone house)",
+            "Enterprise (Office/Commercial facility)"
+          ]
+        },
+        {
+          "id": "q3",
+          "type": "single_choice",
+          "title": "What is your role in internet or IT-related decisions?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 3,
+          "options": [
+            "Primary decision-maker (Final authority)",
+            "Influencer/Advisor (Recommend but not final say)",
+            "End user only (No decision influence)"
+          ]
+        },
+        {
+          "id": "q4",
+          "type": "single_choice",
+          "title": "Who is your Internet Service Provider (ISP)?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 4,
+          "options": [
+            "Safaricom",
+            "Airtel",
+            "Jamii Telecom",
+            "Zuku",
+            "Liquid/Africa Data Centres",
+            "Other"
+          ],
+          "hasOther": true
+        },
+        {
+          "id": "q5",
+          "type": "single_choice",
+          "title": "Approximately how many people regularly use the internet connection at this premises?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 5,
+          "options": [
+            "2-3 people",
+            "4-7 people",
+            "8-10 people",
+            "More than 10 people"
+          ]
+        },
+        {
+          "id": "q6",
+          "type": "multiple_choice",
+          "title": "Which types of devices are regularly connected? (Select all that apply)",
+          "required": true,
+          "sectionId": "profile",
+          "order": 6,
+          "options": [
+            "Smartphones",
+            "Laptops / Desktops",
+            "Smart TVs / Streaming devices",
+            "Gaming consoles",
+            "Smart home / IoT devices (CCTV, sensors, etc)"
+          ]
+        },
+        {
+          "id": "q7",
+          "type": "multiple_choice",
+          "title": "Type of internet connection used (Select all that apply)",
+          "required": true,
+          "sectionId": "usage",
+          "order": 1,
+          "options": [
+            "Fibre",
+            "Fixed Wireless",
+            "Mobile Broadband (4G/5G)",
+            "Satellite",
+            "Other"
+          ],
+          "hasOther": true
+        },
+        {
+          "id": "q8",
+          "type": "single_choice",
+          "title": "Subscribed or estimated bandwidth capacity",
+          "required": true,
+          "sectionId": "usage",
+          "order": 2,
+          "options": [
+            "Less than 10 Mbps",
+            "10-50 Mbps",
+            "50-100 Mbps",
+            "100-500 Mbps",
+            "More than 500 Mbps",
+            "Not Sure"
+          ]
+        },
+        {
+          "id": "q9",
+          "type": "multiple_choice",
+          "title": "Peak usage periods (Select all that apply)",
+          "required": true,
+          "sectionId": "usage",
+          "order": 3,
+          "options": [
+            "Morning (6am-12pm)",
+            "Afternoon (12pm-6pm)",
+            "Evening (6pm-12am)",
+            "Overnight (12am-6am)"
+          ]
+        },
+        {
+          "id": "q10",
+          "type": "single_choice",
+          "title": "Compared to two years ago, your internet usage is:",
+          "required": true,
+          "sectionId": "usage",
+          "order": 4,
+          "options": [
+            "Much lower",
+            "Slightly lower",
+            "About the same",
+            "Higher",
+            "Significantly higher"
+          ]
+        },
+        {
+          "id": "q11",
+          "type": "single_choice",
+          "title": "How often do internet disruptions affect your activities?",
+          "required": true,
+          "sectionId": "performance",
+          "order": 1,
+          "options": [
+            "Never",
+            "Rarely (Monthly or less)",
+            "Occasionally (Weekly)",
+            "Frequently (Daily)"
+          ]
+        },
+        {
+          "id": "q12",
+          "type": "multiple_choice",
+          "title": "Which issue makes internet performance unacceptable for you? (Select all that apply)",
+          "required": true,
+          "sectionId": "performance",
+          "order": 2,
+          "options": [
+            "Low speeds",
+            "High latency",
+            "Frequent outages",
+            "Poor customer support",
+            "Inconsistent performance during peak hours",
+            "Other"
+          ],
+          "hasOther": true
+        },
+        {
+          "id": "q13",
+          "type": "single_choice",
+          "title": "How much performance variation can you tolerate during peak hours?",
+          "required": true,
+          "sectionId": "performance",
+          "order": 3,
+          "options": [
+            "None",
+            "Minor slowdowns",
+            "Significant slowdowns",
+            "Performance consistency not important"
+          ]
+        },
+        {
+          "id": "q14",
+          "type": "single_choice",
+          "title": "How do you perceive your current internet cost?",
+          "required": true,
+          "sectionId": "value",
+          "order": 1,
+          "options": [
+            "Overpriced",
+            "Fairly priced",
+            "Underpriced for the performance",
+            "Not sure"
+          ]
+        },
+        {
+          "id": "q15",
+          "type": "multiple_choice",
+          "title": "What would you justify paying more for? (Select up to 3)",
+          "required": true,
+          "sectionId": "value",
+          "order": 2,
+          "options": [
+            "Guaranteed uptime",
+            "Faster fault resolution",
+            "Improved security",
+            "Bundled digital services",
+            "Local technical support",
+            "More bandwidth capacity"
+          ],
+          "validation": {
+            "minSelections": 1,
+            "maxSelections": 3
+          }
+        },
+        {
+          "id": "q16",
+          "type": "single_choice",
+          "title": "If forced to choose, which do you prioritize most?",
+          "required": true,
+          "sectionId": "value",
+          "order": 3,
+          "options": [
+            "Lower cost",
+            "Consistent performance",
+            "Scalability for future needs",
+            "Integrated digital services"
+          ]
+        },
+        {
+          "id": "q17",
+          "type": "single_choice",
+          "title": "Approximately how much do you currently pay per month for internet connectivity",
+          "required": true,
+          "sectionId": "value",
+          "order": 4,
+          "options": [
+            "Less than KES 1,000",
+            "KES 1,000 - KES 2,500",
+            "KES 2,500 - KES 4,000",
+            "KES 4,000 - KES 6,000",
+            "KES 6,000 - KES 10,000",
+            "Above KES 10,000"
+          ]
+        },
+        {
+          "id": "q18",
+          "type": "single_choice",
+          "title": "What is the size of your organization?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 1,
+          "options": [
+            "Micro (Less than 10 employees)",
+            "Small (10-49 employees)",
+            "Medium (50-100 employees)",
+            "Large (More than 100 employees)"
+          ]
+        },
+        {
+          "id": "q19",
+          "type": "single_choice",
+          "title": "What best describes the building's internet setup?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 2,
+          "options": [
+            "One shared connection for the entire building",
+            "Individual connections per unit",
+            "Combination of shared and individual connections",
+            "Not sure"
+          ]
+        },
+        {
+          "id": "q20",
+          "type": "single_choice",
+          "title": "Who is responsible for choosing the internet provider for the building?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 3,
+          "options": [
+            "Building Management",
+            "Individual tenants/owners",
+            "Property developer",
+            "ISP recommendation"
+          ]
+        },
+        {
+          "id": "q21",
+          "type": "long_text",
+          "title": "What is the biggest internet-related challenge in your building?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 4
+        },
+        {
+          "id": "q22",
+          "type": "single_choice",
+          "title": "How willing would residents be to adopt a managed building-wide internet solution?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 5,
+          "options": [
+            "Not willing",
+            "Slightly willing",
+            "Moderately willing",
+            "Very willing"
+          ]
+        },
+        {
+          "id": "q23",
+          "type": "multiple_choice",
+          "title": "Which value-added services would be attractive in a building-wide package? (Select up to 2)",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 6,
+          "options": [
+            "Guaranteed minimum speeds",
+            "Centralized customer support",
+            "CCTV / smart security integration",
+            "Bundled streaming or cloud services",
+            "Lower per-unit cost"
+          ],
+          "validation": {
+            "minSelections": 1,
+            "maxSelections": 2
+          }
+        },
+        {
+          "id": "q24",
+          "type": "single_choice",
+          "title": "How reliable is your current internet connection at home?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 1,
+          "options": [
+            "Very unreliable",
+            "Somewhat unreliable",
+            "Reliable",
+            "Very reliable"
+          ]
+        },
+        {
+          "id": "q25",
+          "type": "single_choice",
+          "title": "Which factor most influences your choice of internet provider?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 2,
+          "options": [
+            "Price",
+            "Speed",
+            "Reliability",
+            "Customer support",
+            "Availability in my area"
+          ]
+        },
+        {
+          "id": "q26",
+          "type": "single_choice",
+          "title": "Which household activity consumes the most bandwidth?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 3,
+          "options": [
+            "Streaming (Netflix, YouTube, etc.)",
+            "Remote work / video meetings",
+            "Online learning",
+            "Gaming",
+            "Smart home / IoT devices"
+          ]
+        },
+        {
+          "id": "q27",
+          "type": "rating",
+          "title": "How likely are you to upgrade your internet plan in the next 12 months? (1 = Very Unlikely, 5 = Very Likely)",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 4,
+          "ratingScale": 5
+        },
+        {
+          "id": "q28",
+          "type": "single_choice",
+          "title": "Would you consider a bundled home package (internet + TV + cloud storage + security + smart home solutions)?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 5,
+          "options": [
+            "Yes",
+            "No",
+            "Maybe"
+          ]
+        },
+        {
+          "id": "q29",
+          "type": "single_choice",
+          "title": "How critical is internet availability to daily business operations?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 1,
+          "options": [
+            "Not critical",
+            "Important",
+            "Very critical",
+            "Business cannot operate without it"
+          ]
+        },
+        {
+          "id": "q30",
+          "type": "single_choice",
+          "title": "Does your organization have redundance or backup connectivity?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 2,
+          "options": [
+            "Yes (Full Redundancy)",
+            "Partial redundancy (e.g. Mobile Failover, Secondary Fibre)",
+            "No redundancy"
+          ]
+        },
+        {
+          "id": "q31",
+          "type": "single_choice",
+          "title": "Which issue poses the highest business risk?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 3,
+          "options": [
+            "Downtime",
+            "Data security threats",
+            "Latency to cloud platforms",
+            "Limited scalability",
+            "High connectivity costs",
+            "Limited Options"
+          ]
+        },
+        {
+          "id": "q32",
+          "type": "single_choice",
+          "title": "Who is responsible for IT and connectivity decisions?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 4,
+          "options": [
+            "In-house IT team",
+            "External IT consultant",
+            "Management",
+            "ISP-managed",
+            "Available ISP in the area"
+          ]
+        },
+        {
+          "id": "q33",
+          "type": "single_choice",
+          "title": "What infrastructure improvement would most benefit your business?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 5,
+          "options": [
+            "Higher-capacity links",
+            "Lower latency to cloud services",
+            "Edge computing / local hosting",
+            "Better SLA and support",
+            "Predictive monitoring"
+          ]
+        },
+        {
+          "id": "q34",
+          "type": "single_choice",
+          "title": "How do you expect your internet and digital service needs to change in the next 2-3 years?",
+          "required": true,
+          "sectionId": "future",
+          "order": 1,
+          "options": [
+            "Decrease",
+            "Remain the same",
+            "Increase moderately",
+            "Increase significantly"
+          ]
+        },
+        {
+          "id": "q35",
+          "type": "rating",
+          "title": "How confident are you that your current provider can meet future demand? (1 = Not Confident, 5 = Very Confident)",
+          "required": true,
+          "sectionId": "future",
+          "order": 2,
+          "ratingScale": 5
+        },
+        {
+          "id": "q36",
+          "type": "single_choice",
+          "title": "Would AI-driven insights (usage forecasts, proactive fault detection) influence your choice of provider?",
+          "required": true,
+          "sectionId": "future",
+          "order": 3,
+          "options": [
+            "Yes",
+            "No",
+            "Maybe"
+          ]
+        },
+        {
+          "id": "q37",
+          "type": "long_text",
+          "title": "In one or two sentences, describe what the biggest limitation of your current internet or digital services is?",
+          "required": true,
+          "sectionId": "insight",
+          "order": 1
+        },
+        {
+          "id": "q38",
+          "type": "long_text",
+          "title": "What is the biggest challenge you face with your Internet Service Provider (ISP)?",
+          "required": true,
+          "sectionId": "insight",
+          "order": 2
+        },
+        {
+          "id": "q39",
+          "type": "rating",
+          "title": "Overall, how satisfied are you with your current Internet Service Provider? (1= Very dissatisfied, 5 = Very satisfied)",
+          "required": true,
+          "sectionId": "insight",
+          "order": 3,
+          "ratingScale": 5
+        }
+      ],
+      "sections": [
+        {
+          "id": "profile",
+          "title": "Respondent Profile & Context",
+          "order": 1
+        },
+        {
+          "id": "usage",
+          "title": "Internet Access & Usage Characteristics",
+          "order": 2
+        },
+        {
+          "id": "performance",
+          "title": "Service Performance & Tolerance Levels",
+          "order": 3
+        },
+        {
+          "id": "value",
+          "title": "Value, Cost & Decision Trade-offs",
+          "order": 4
+        },
+        {
+          "id": "mdus",
+          "title": "Multi-Dwelling Units (MDUs - Apartments / Estates)",
+          "order": 5
+        },
+        {
+          "id": "sdus",
+          "title": "Single-Dwelling Units (SDUs - Standalone Homes)",
+          "order": 6
+        },
+        {
+          "id": "enterprise",
+          "title": "Enterprises (Offices / Commercial Premises)",
+          "order": 7
+        },
+        {
+          "id": "future",
+          "title": "Cross-Segment Future Demand and Readiness",
+          "order": 8
+        },
+        {
+          "id": "insight",
+          "title": "High-Value Insight",
+          "order": 9
+        }
+      ],
+      "flowRules": [
+        {
+          "questionId": "q2",
+          "rules": [
+            {
+              "value": "Multi-Dwelling Unit (Apartment/Estate)",
+              "action": "show_section",
+              "target": "mdus"
+            },
+            {
+              "value": "Single-Dwelling Unit (Standalone house)",
+              "action": "show_section",
+              "target": "sdus"
+            },
+            {
+              "value": "Enterprise (Office/Commercial facility)",
+              "action": "show_section",
+              "target": "enterprise"
+            }
+          ]
+        },
+        {
+          "questionId": "q6",
+          "rules": [
+            {
+              "valueContains": "Smart home / IoT devices (CCTV, sensors, etc)",
+              "action": "show_question",
+              "target": "q12"
+            }
+          ]
+        }
+      ],
+      "validationRules": {
+        "global": {
+          "requiredMessage": "This question is required.",
+          "maxTextLength": 2000
+        },
+        "perQuestion": {
+          "q15": {
+            "minSelections": 1,
+            "maxSelections": 3
+          },
+          "q23": {
+            "minSelections": 1,
+            "maxSelections": 2
+          }
+        }
+      },
+      "settings": {
+        "presentationMode": "multi_step",
+        "isSectional": true,
+        "autoAdvanceThreshold": null
+      },
+      "themeColor": "#1d4ed8",
+      "thankYouMessage": "Thank you for sharing your internet experience!",
+      "showProgress": true,
+      "oneResponsePerRecipient": true,
+      "isWhitelistEnabled": false,
+      "visibilityRules": [],
+      "navigationRules": []
+    },
+    "finalSeed": {
+      "surveyTitle": "Internet Experience Questionnaire",
+      "version": 1,
+      "themeColor": "#1d4ed8",
+      "thankYouMessage": "Thank you for sharing your internet experience!",
+      "metadata": {
+        "captureMetadata": true,
+        "locale": "en-US",
+        "maxResponseTimeMinutes": 60
+      },
+      "sections": [
+        {
+          "id": "profile",
+          "title": "Respondent Profile & Context",
+          "order": 1
+        },
+        {
+          "id": "usage",
+          "title": "Internet Access & Usage Characteristics",
+          "order": 2
+        },
+        {
+          "id": "performance",
+          "title": "Service Performance & Tolerance Levels",
+          "order": 3
+        },
+        {
+          "id": "value",
+          "title": "Value, Cost & Decision Trade-offs",
+          "order": 4
+        },
+        {
+          "id": "mdus",
+          "title": "Multi-Dwelling Units (MDUs - Apartments / Estates)",
+          "order": 5
+        },
+        {
+          "id": "sdus",
+          "title": "Single-Dwelling Units (SDUs - Standalone Homes)",
+          "order": 6
+        },
+        {
+          "id": "enterprise",
+          "title": "Enterprises (Offices / Commercial Premises)",
+          "order": 7
+        },
+        {
+          "id": "future",
+          "title": "Cross-Segment Future Demand and Readiness",
+          "order": 8
+        },
+        {
+          "id": "insight",
+          "title": "High-Value Insight",
+          "order": 9
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "type": "dropdown",
+          "title": "What is your location within Westlands?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 1,
+          "options": [
+            "Westlands CBD",
+            "Parklands",
+            "Highridge",
+            "Spring Valley",
+            "Riverside",
+            "Mountain View",
+            "Kangemi",
+            "Loresho",
+            "Kyuna",
+            "Kitisuru"
+          ]
+        },
+        {
+          "id": "q2",
+          "type": "single_choice",
+          "title": "What type is your premises?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 2,
+          "options": [
+            "Multi-Dwelling Unit (Apartment/Estate)",
+            "Single-Dwelling Unit (Standalone house)",
+            "Enterprise (Office/Commercial facility)"
+          ]
+        },
+        {
+          "id": "q3",
+          "type": "single_choice",
+          "title": "What is your role in internet or IT-related decisions?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 3,
+          "options": [
+            "Primary decision-maker (Final authority)",
+            "Influencer/Advisor (Recommend but not final say)",
+            "End user only (No decision influence)"
+          ]
+        },
+        {
+          "id": "q4",
+          "type": "single_choice",
+          "title": "Who is your Internet Service Provider (ISP)?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 4,
+          "options": [
+            "Safaricom",
+            "Airtel",
+            "Jamii Telecom",
+            "Zuku",
+            "Liquid/Africa Data Centres",
+            "Other"
+          ],
+          "hasOther": true
+        },
+        {
+          "id": "q5",
+          "type": "single_choice",
+          "title": "Approximately how many people regularly use the internet connection at this premises?",
+          "required": true,
+          "sectionId": "profile",
+          "order": 5,
+          "options": [
+            "2-3 people",
+            "4-7 people",
+            "8-10 people",
+            "More than 10 people"
+          ]
+        },
+        {
+          "id": "q6",
+          "type": "multiple_choice",
+          "title": "Which types of devices are regularly connected? (Select all that apply)",
+          "required": true,
+          "sectionId": "profile",
+          "order": 6,
+          "options": [
+            "Smartphones",
+            "Laptops / Desktops",
+            "Smart TVs / Streaming devices",
+            "Gaming consoles",
+            "Smart home / IoT devices (CCTV, sensors, etc)"
+          ]
+        },
+        {
+          "id": "q7",
+          "type": "multiple_choice",
+          "title": "Type of internet connection used (Select all that apply)",
+          "required": true,
+          "sectionId": "usage",
+          "order": 1,
+          "options": [
+            "Fibre",
+            "Fixed Wireless",
+            "Mobile Broadband (4G/5G)",
+            "Satellite",
+            "Other"
+          ],
+          "hasOther": true
+        },
+        {
+          "id": "q8",
+          "type": "single_choice",
+          "title": "Subscribed or estimated bandwidth capacity",
+          "required": true,
+          "sectionId": "usage",
+          "order": 2,
+          "options": [
+            "Less than 10 Mbps",
+            "10-50 Mbps",
+            "50-100 Mbps",
+            "100-500 Mbps",
+            "More than 500 Mbps",
+            "Not Sure"
+          ]
+        },
+        {
+          "id": "q9",
+          "type": "multiple_choice",
+          "title": "Peak usage periods (Select all that apply)",
+          "required": true,
+          "sectionId": "usage",
+          "order": 3,
+          "options": [
+            "Morning (6am-12pm)",
+            "Afternoon (12pm-6pm)",
+            "Evening (6pm-12am)",
+            "Overnight (12am-6am)"
+          ]
+        },
+        {
+          "id": "q10",
+          "type": "single_choice",
+          "title": "Compared to two years ago, your internet usage is:",
+          "required": true,
+          "sectionId": "usage",
+          "order": 4,
+          "options": [
+            "Much lower",
+            "Slightly lower",
+            "About the same",
+            "Higher",
+            "Significantly higher"
+          ]
+        },
+        {
+          "id": "q11",
+          "type": "single_choice",
+          "title": "How often do internet disruptions affect your activities?",
+          "required": true,
+          "sectionId": "performance",
+          "order": 1,
+          "options": [
+            "Never",
+            "Rarely (Monthly or less)",
+            "Occasionally (Weekly)",
+            "Frequently (Daily)"
+          ]
+        },
+        {
+          "id": "q12",
+          "type": "multiple_choice",
+          "title": "Which issue makes internet performance unacceptable for you? (Select all that apply)",
+          "required": true,
+          "sectionId": "performance",
+          "order": 2,
+          "options": [
+            "Low speeds",
+            "High latency",
+            "Frequent outages",
+            "Poor customer support",
+            "Inconsistent performance during peak hours",
+            "Other"
+          ],
+          "hasOther": true
+        },
+        {
+          "id": "q13",
+          "type": "single_choice",
+          "title": "How much performance variation can you tolerate during peak hours?",
+          "required": true,
+          "sectionId": "performance",
+          "order": 3,
+          "options": [
+            "None",
+            "Minor slowdowns",
+            "Significant slowdowns",
+            "Performance consistency not important"
+          ]
+        },
+        {
+          "id": "q14",
+          "type": "single_choice",
+          "title": "How do you perceive your current internet cost?",
+          "required": true,
+          "sectionId": "value",
+          "order": 1,
+          "options": [
+            "Overpriced",
+            "Fairly priced",
+            "Underpriced for the performance",
+            "Not sure"
+          ]
+        },
+        {
+          "id": "q15",
+          "type": "multiple_choice",
+          "title": "What would you justify paying more for? (Select up to 3)",
+          "required": true,
+          "sectionId": "value",
+          "order": 2,
+          "options": [
+            "Guaranteed uptime",
+            "Faster fault resolution",
+            "Improved security",
+            "Bundled digital services",
+            "Local technical support",
+            "More bandwidth capacity"
+          ],
+          "validation": {
+            "minSelections": 1,
+            "maxSelections": 3
+          }
+        },
+        {
+          "id": "q16",
+          "type": "single_choice",
+          "title": "If forced to choose, which do you prioritize most?",
+          "required": true,
+          "sectionId": "value",
+          "order": 3,
+          "options": [
+            "Lower cost",
+            "Consistent performance",
+            "Scalability for future needs",
+            "Integrated digital services"
+          ]
+        },
+        {
+          "id": "q17",
+          "type": "single_choice",
+          "title": "Approximately how much do you currently pay per month for internet connectivity",
+          "required": true,
+          "sectionId": "value",
+          "order": 4,
+          "options": [
+            "Less than KES 1,000",
+            "KES 1,000 - KES 2,500",
+            "KES 2,500 - KES 4,000",
+            "KES 4,000 - KES 6,000",
+            "KES 6,000 - KES 10,000",
+            "Above KES 10,000"
+          ]
+        },
+        {
+          "id": "q18",
+          "type": "single_choice",
+          "title": "What is the size of your organization?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 1,
+          "options": [
+            "Micro (Less than 10 employees)",
+            "Small (10-49 employees)",
+            "Medium (50-100 employees)",
+            "Large (More than 100 employees)"
+          ]
+        },
+        {
+          "id": "q19",
+          "type": "single_choice",
+          "title": "What best describes the building's internet setup?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 2,
+          "options": [
+            "One shared connection for the entire building",
+            "Individual connections per unit",
+            "Combination of shared and individual connections",
+            "Not sure"
+          ]
+        },
+        {
+          "id": "q20",
+          "type": "single_choice",
+          "title": "Who is responsible for choosing the internet provider for the building?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 3,
+          "options": [
+            "Building Management",
+            "Individual tenants/owners",
+            "Property developer",
+            "ISP recommendation"
+          ]
+        },
+        {
+          "id": "q21",
+          "type": "long_text",
+          "title": "What is the biggest internet-related challenge in your building?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 4
+        },
+        {
+          "id": "q22",
+          "type": "single_choice",
+          "title": "How willing would residents be to adopt a managed building-wide internet solution?",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 5,
+          "options": [
+            "Not willing",
+            "Slightly willing",
+            "Moderately willing",
+            "Very willing"
+          ]
+        },
+        {
+          "id": "q23",
+          "type": "multiple_choice",
+          "title": "Which value-added services would be attractive in a building-wide package? (Select up to 2)",
+          "required": true,
+          "sectionId": "mdus",
+          "order": 6,
+          "options": [
+            "Guaranteed minimum speeds",
+            "Centralized customer support",
+            "CCTV / smart security integration",
+            "Bundled streaming or cloud services",
+            "Lower per-unit cost"
+          ],
+          "validation": {
+            "minSelections": 1,
+            "maxSelections": 2
+          }
+        },
+        {
+          "id": "q24",
+          "type": "single_choice",
+          "title": "How reliable is your current internet connection at home?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 1,
+          "options": [
+            "Very unreliable",
+            "Somewhat unreliable",
+            "Reliable",
+            "Very reliable"
+          ]
+        },
+        {
+          "id": "q25",
+          "type": "single_choice",
+          "title": "Which factor most influences your choice of internet provider?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 2,
+          "options": [
+            "Price",
+            "Speed",
+            "Reliability",
+            "Customer support",
+            "Availability in my area"
+          ]
+        },
+        {
+          "id": "q26",
+          "type": "single_choice",
+          "title": "Which household activity consumes the most bandwidth?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 3,
+          "options": [
+            "Streaming (Netflix, YouTube, etc.)",
+            "Remote work / video meetings",
+            "Online learning",
+            "Gaming",
+            "Smart home / IoT devices"
+          ]
+        },
+        {
+          "id": "q27",
+          "type": "rating",
+          "title": "How likely are you to upgrade your internet plan in the next 12 months? (1 = Very Unlikely, 5 = Very Likely)",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 4,
+          "ratingScale": 5
+        },
+        {
+          "id": "q28",
+          "type": "single_choice",
+          "title": "Would you consider a bundled home package (internet + TV + cloud storage + security + smart home solutions)?",
+          "required": true,
+          "sectionId": "sdus",
+          "order": 5,
+          "options": [
+            "Yes",
+            "No",
+            "Maybe"
+          ]
+        },
+        {
+          "id": "q29",
+          "type": "single_choice",
+          "title": "How critical is internet availability to daily business operations?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 1,
+          "options": [
+            "Not critical",
+            "Important",
+            "Very critical",
+            "Business cannot operate without it"
+          ]
+        },
+        {
+          "id": "q30",
+          "type": "single_choice",
+          "title": "Does your organization have redundance or backup connectivity?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 2,
+          "options": [
+            "Yes (Full Redundancy)",
+            "Partial redundancy (e.g. Mobile Failover, Secondary Fibre)",
+            "No redundancy"
+          ]
+        },
+        {
+          "id": "q31",
+          "type": "single_choice",
+          "title": "Which issue poses the highest business risk?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 3,
+          "options": [
+            "Downtime",
+            "Data security threats",
+            "Latency to cloud platforms",
+            "Limited scalability",
+            "High connectivity costs",
+            "Limited Options"
+          ]
+        },
+        {
+          "id": "q32",
+          "type": "single_choice",
+          "title": "Who is responsible for IT and connectivity decisions?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 4,
+          "options": [
+            "In-house IT team",
+            "External IT consultant",
+            "Management",
+            "ISP-managed",
+            "Available ISP in the area"
+          ]
+        },
+        {
+          "id": "q33",
+          "type": "single_choice",
+          "title": "What infrastructure improvement would most benefit your business?",
+          "required": true,
+          "sectionId": "enterprise",
+          "order": 5,
+          "options": [
+            "Higher-capacity links",
+            "Lower latency to cloud services",
+            "Edge computing / local hosting",
+            "Better SLA and support",
+            "Predictive monitoring"
+          ]
+        },
+        {
+          "id": "q34",
+          "type": "single_choice",
+          "title": "How do you expect your internet and digital service needs to change in the next 2-3 years?",
+          "required": true,
+          "sectionId": "future",
+          "order": 1,
+          "options": [
+            "Decrease",
+            "Remain the same",
+            "Increase moderately",
+            "Increase significantly"
+          ]
+        },
+        {
+          "id": "q35",
+          "type": "rating",
+          "title": "How confident are you that your current provider can meet future demand? (1 = Not Confident, 5 = Very Confident)",
+          "required": true,
+          "sectionId": "future",
+          "order": 2,
+          "ratingScale": 5
+        },
+        {
+          "id": "q36",
+          "type": "single_choice",
+          "title": "Would AI-driven insights (usage forecasts, proactive fault detection) influence your choice of provider?",
+          "required": true,
+          "sectionId": "future",
+          "order": 3,
+          "options": [
+            "Yes",
+            "No",
+            "Maybe"
+          ]
+        },
+        {
+          "id": "q37",
+          "type": "long_text",
+          "title": "In one or two sentences, describe what the biggest limitation of your current internet or digital services is?",
+          "required": true,
+          "sectionId": "insight",
+          "order": 1
+        },
+        {
+          "id": "q38",
+          "type": "long_text",
+          "title": "What is the biggest challenge you face with your Internet Service Provider (ISP)?",
+          "required": true,
+          "sectionId": "insight",
+          "order": 2
+        },
+        {
+          "id": "q39",
+          "type": "rating",
+          "title": "Overall, how satisfied are you with your current Internet Service Provider? (1= Very dissatisfied, 5 = Very satisfied)",
+          "required": true,
+          "sectionId": "insight",
+          "order": 3,
+          "ratingScale": 5
+        }
+      ],
+      "flowRules": [
+        {
+          "questionId": "q2",
+          "rules": [
+            {
+              "value": "Multi-Dwelling Unit (Apartment/Estate)",
+              "action": "show_section",
+              "target": "mdus"
+            },
+            {
+              "value": "Single-Dwelling Unit (Standalone house)",
+              "action": "show_section",
+              "target": "sdus"
+            },
+            {
+              "value": "Enterprise (Office/Commercial facility)",
+              "action": "show_section",
+              "target": "enterprise"
+            }
+          ]
+        },
+        {
+          "questionId": "q6",
+          "rules": [
+            {
+              "valueContains": "Smart home / IoT devices (CCTV, sensors, etc)",
+              "action": "show_question",
+              "target": "q12"
+            }
+          ]
+        }
+      ],
+      "validationRules": {
+        "global": {
+          "requiredMessage": "This question is required.",
+          "maxTextLength": 2000
+        },
+        "perQuestion": {
+          "q15": {
+            "minSelections": 1,
+            "maxSelections": 3
+          },
+          "q23": {
+            "minSelections": 1,
+            "maxSelections": 2
+          }
+        }
+      },
+      "submit": {
+        "action": "submit_response",
+        "postSubmit": {
+          "showThankYou": true,
+          "redirectUrl": null
+        }
+      },
+      "scenarios": [
+        {
+          "id": "scenario_mdu",
+          "name": "MDU path",
+          "steps": [
+            {
+              "q1": "Parklands"
+            },
+            {
+              "q2": "Multi-Dwelling Unit (Apartment/Estate)"
+            },
+            {
+              "q3": "Primary decision-maker (Final authority)"
+            },
+            {
+              "q4": "Safaricom"
+            },
+            {
+              "q5": "More than 10 people"
+            },
+            {
+              "q6": [
+                "Smartphones",
+                "Laptops / Desktops"
+              ]
+            },
+            {
+              "q18": "Large (More than 100 employees)"
+            },
+            {
+              "q19": "One shared connection for the entire building"
+            },
+            {
+              "q20": "Building Management"
+            },
+            {
+              "q21": "Slow speeds"
+            },
+            {
+              "q22": "Very willing"
+            },
+            {
+              "q23": [
+                "Guaranteed minimum speeds",
+                "Lower per-unit cost"
+              ]
+            },
+            {
+              "q7": [
+                "Fibre"
+              ]
+            },
+            {
+              "q8": "100-500 Mbps"
+            },
+            {
+              "q9": [
+                "Evening (6pm-12am)"
+              ]
+            },
+            {
+              "q10": "Significantly higher"
+            },
+            {
+              "q11": "Occasionally (Weekly)"
+            },
+            {
+              "q12": [
+                "Low speeds"
+              ]
+            },
+            {
+              "q13": "None"
+            },
+            {
+              "q14": "Fairly priced"
+            },
+            {
+              "q15": [
+                "Guaranteed uptime",
+                "More bandwidth capacity"
+              ]
+            },
+            {
+              "q16": "Consistent performance"
+            },
+            {
+              "q17": "KES 4,000 - KES 6,000"
+            },
+            {
+              "q34": "Increase significantly"
+            },
+            {
+              "q35": 4
+            },
+            {
+              "q36": "Yes"
+            },
+            {
+              "q37": "Slow speeds during peak."
+            },
+            {
+              "q38": "Poor support."
+            },
+            {
+              "q39": 3
+            }
+          ],
+          "expectedPath": [
+            "profile",
+            "usage",
+            "performance",
+            "value",
+            "mdus",
+            "future",
+            "insight"
+          ]
+        },
+        {
+          "id": "scenario_sdu",
+          "name": "SDU path",
+          "steps": [
+            {
+              "q1": "Loresho"
+            },
+            {
+              "q2": "Single-Dwelling Unit (Standalone house)"
+            },
+            {
+              "q3": "End user only (No decision influence)"
+            },
+            {
+              "q4": "Zuku"
+            },
+            {
+              "q5": "4-7 people"
+            },
+            {
+              "q6": [
+                "Smart TVs / Streaming devices"
+              ]
+            },
+            {
+              "q24": "Reliable"
+            },
+            {
+              "q25": "Price"
+            },
+            {
+              "q26": "Streaming (Netflix, YouTube, etc.)"
+            },
+            {
+              "q27": 5
+            },
+            {
+              "q28": "Maybe"
+            },
+            {
+              "q7": [
+                "Mobile Broadband (4G/5G)"
+              ]
+            },
+            {
+              "q8": "50-100 Mbps"
+            },
+            {
+              "q9": [
+                "Morning (6am-12pm)",
+                "Afternoon (12pm-6pm)"
+              ]
+            },
+            {
+              "q10": "About the same"
+            },
+            {
+              "q11": "Rarely (Monthly or less)"
+            },
+            {
+              "q12": [
+                "High latency"
+              ]
+            },
+            {
+              "q13": "Minor slowdowns"
+            },
+            {
+              "q14": "Overpriced"
+            },
+            {
+              "q15": [
+                "Improved security"
+              ]
+            },
+            {
+              "q16": "Lower cost"
+            },
+            {
+              "q17": "KES 1,000 - KES 2,500"
+            },
+            {
+              "q34": "Remain the same"
+            },
+            {
+              "q35": 2
+            },
+            {
+              "q36": "No"
+            },
+            {
+              "q37": "High cost."
+            },
+            {
+              "q38": "Frequent outages."
+            },
+            {
+              "q39": 2
+            }
+          ],
+          "expectedPath": [
+            "profile",
+            "usage",
+            "performance",
+            "value",
+            "sdus",
+            "future",
+            "insight"
+          ]
+        },
+        {
+          "id": "scenario_enterprise",
+          "name": "Enterprise path",
+          "steps": [
+            {
+              "q1": "Westlands CBD"
+            },
+            {
+              "q2": "Enterprise (Office/Commercial facility)"
+            },
+            {
+              "q3": "Influencer/Advisor (Recommend but not final say)"
+            },
+            {
+              "q4": "Jamii Telecom"
+            },
+            {
+              "q5": "8-10 people"
+            },
+            {
+              "q6": [
+                "Laptops / Desktops",
+                "Gaming consoles"
+              ]
+            },
+            {
+              "q29": "Business cannot operate without it"
+            },
+            {
+              "q30": "Yes (Full Redundancy)"
+            },
+            {
+              "q31": "Downtime"
+            },
+            {
+              "q32": "In-house IT team"
+            },
+            {
+              "q33": "Better SLA and support"
+            },
+            {
+              "q7": [
+                "Fibre",
+                "Fixed Wireless"
+              ]
+            },
+            {
+              "q8": "More than 500 Mbps"
+            },
+            {
+              "q9": [
+                "Overnight (12am-6am)"
+              ]
+            },
+            {
+              "q10": "Higher"
+            },
+            {
+              "q11": "Never"
+            },
+            {
+              "q12": [
+                "Poor customer support"
+              ]
+            },
+            {
+              "q13": "Performance consistency not important"
+            },
+            {
+              "q14": "Not sure"
+            },
+            {
+              "q15": [
+                "Faster fault resolution",
+                "Local technical support",
+                "Bundled digital services"
+              ]
+            },
+            {
+              "q16": "Scalability for future needs"
+            },
+            {
+              "q17": "Above KES 10,000"
+            },
+            {
+              "q34": "Increase moderately"
+            },
+            {
+              "q35": 3
+            },
+            {
+              "q36": "Maybe"
+            },
+            {
+              "q37": "Limited scalability."
+            },
+            {
+              "q38": "High costs."
+            },
+            {
+              "q39": 4
+            }
+          ],
+          "expectedPath": [
+            "profile",
+            "usage",
+            "performance",
+            "value",
+            "enterprise",
+            "future",
+            "insight"
+          ]
+        }
+      ],
+      "visibilityRules": [],
+      "navigationRules": [],
+      "title": "Internet Experience Questionnaire"
+    }
+  }
+}

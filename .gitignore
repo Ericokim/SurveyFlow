@@ -1,16 +1,174 @@
-node_modules
-.DS_Store
-dist
-dist-ssr
-*.local
-.env
-.nitro
-.tanstack
-.wrangler
-.output
-.vinxi
-__unconfig*
-todos.json
+# Survey Application - Git Ignore Rules
 
-# Local Netlify folder
-.netlify
+# =====================================
+# Dependencies & Package Managers
+# =====================================
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# =====================================
+# Environment Variables & Secrets
+# =====================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# =====================================
+# Build Outputs & Distribution
+# =====================================
+dist/
+dist-ssr/
+build/
+.vite/
+.parcel-cache/
+
+# =====================================
+# Development & Cache Files
+# =====================================
+.cache/
+.eslintcache
+.stylelintcache
+.nitro/
+.tanstack/
+
+# =====================================
+# Logs & Debug Files
+# =====================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =====================================
+# Testing & Coverage
+# =====================================
+coverage/
+.coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+frontend/tests/allure-results/
+frontend/tests/allure-report/
+frontend/tests/test-results/
+frontend/tests/blob-report/
+frontend/tests/e2e/test-results/
+frontend/tests/e2e/playwright-report/
+frontend/allure-results/
+frontend/allure-report/
+frontend/blob-report/
+/tests/
+tests/screenshots/*.png
+!tests/screenshots/.gitkeep
+
+# =====================================
+# Runtime & Process Files
+# =====================================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# =====================================
+# Temporary Files
+# =====================================
+tmp/
+temp/
+.tmp/
+
+# =====================================
+# Editor & IDE Files
+# =====================================
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# =====================================
+# OS Generated Files
+# =====================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# =====================================
+# Application Specific
+# =====================================
+# File uploads
+uploads/*.png
+uploads/*.jpg
+uploads/*.jpeg
+uploads/*.gif
+uploads/*.pdf
+uploads/*.csv
+!uploads/.gitkeep
+
+# Generated route files
+routeTree.gen.ts
+
+# Application data
+count.txt
+
+# =====================================
+# Claude Code & AI Tools
+# =====================================
+# Keep agents config but ignore session data
+.claude/sessions/
+.claude/cache/
+.claude
+*/agents
+docs
+.mcp/
+.mcp.json
+
+# =====================================
+# Development Tools
+# =====================================
+.prettierignore
+
+# =====================================
+# Survey Application Specific
+# =====================================
+# API testing files
+http/
+*.http
+*.rest
+
+# Documentation artifacts
+AGENTS.md
+CLAUDE.md
+projectplan.md
+
+# Database dumps
+*.dump
+*.sql
+
+# Backup files
+*.backup
+*.bak
