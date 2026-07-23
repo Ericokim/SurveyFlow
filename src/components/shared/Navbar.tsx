@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Bell, Building2, ChevronDown, Menu, Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -22,8 +22,8 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import {
-  appNavItems,
   authNavActions,
+  getAppNavItems,
   navItems,
   notificationItems,
   userMenuItems,
@@ -69,6 +69,21 @@ function getNavbarVariant(pathname: string, variant: NavbarVariant) {
   return "public";
 }
 
+/**
+ * App navigation is workspace-scoped, so its links can only be built once the
+ * active workspace slug is known. Items whose routes do not exist yet are
+ * filtered out — an absent link is better than one that 404s.
+ */
+function useNavItems(variant: NavbarVariant): AppNavItem[] {
+  const params = useParams({ strict: false });
+  const workspaceSlug =
+    typeof params.workspaceSlug === "string" ? params.workspaceSlug : undefined;
+
+  if (variant !== "app" || !workspaceSlug) return navItems;
+
+  return getAppNavItems(workspaceSlug).filter((item) => !item.pending);
+}
+
 function normalizeHash(hash: string) {
   return hash.startsWith("#") ? hash.slice(1) : hash;
 }
@@ -94,7 +109,7 @@ function isActiveNavItem(
   activeSectionId: LandingSectionId,
 ) {
   const currentHash = normalizeHash(hash);
-  const appPathname = pathname === "/dashboard" ? "/app/dashboard" : pathname;
+  const appPathname = pathname;
 
   if (item.sectionId) {
     return isLandingPath(pathname) && item.sectionId === activeSectionId;
@@ -406,7 +421,7 @@ function MobileMenu({
   activeSectionId: LandingSectionId;
   onSectionChange: (sectionId: LandingSectionId) => void;
 }) {
-  const items = variant === "app" ? appNavItems : navItems;
+  const items = useNavItems(variant);
   const enableSectionScroll = variant === "public";
 
   return (
@@ -771,7 +786,7 @@ export function Navbar({ name = "SurveyFlow", variant = "auto" }: NavbarProps) {
   const pathname = location.pathname;
   const hash = location.hash;
   const resolvedVariant = getNavbarVariant(pathname, variant);
-  const desktopItems = resolvedVariant === "app" ? appNavItems : navItems;
+  const desktopItems = useNavItems(resolvedVariant);
   const enableSectionScroll =
     resolvedVariant === "public" && isLandingPath(pathname);
   const { activeSectionId, activateSection } =

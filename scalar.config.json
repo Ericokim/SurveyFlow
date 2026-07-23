@@ -1,0 +1,36 @@
+{
+  "$schema": "https://registry.scalar.com/@scalar/schemas/config",
+  "scalar": "2.0.0",
+  "info": {
+    "title": "SurveyFlow",
+    "description": "Multitenant survey platform — API reference and data model"
+  },
+  "navigation": {
+    "routes": {
+      "/": {
+        "type": "page",
+        "title": "Data model",
+        "filepath": "docs/api/data-model.md",
+        "description": "How SurveyFlow's collections relate and which are workspace-scoped"
+      },
+      "/api": {
+        "type": "openapi",
+        "title": "API reference",
+        "filepath": "docs/api/openapi.yaml"
+      },
+      "/architecture": {
+        "type": "page",
+        "title": "Architecture",
+        "filepath": "docs/architecture.md"
+      },
+      "/database": {
+        "type": "page",
+        "title": "Database conventions",
+        "filepath": "docs/database.md"
+      }
+    }
+  },
+  "siteConfig": {
+    "theme": "default"
+  }
+}

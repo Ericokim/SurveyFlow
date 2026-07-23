@@ -53,38 +53,54 @@ export const publicNavItems = [
   },
 ] satisfies AppNavItem[];
 
-export const appNavItems = [
-  {
-    name: "Dashboard",
-    title: "Dashboard",
-    to: "/app/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Surveys",
-    title: "Surveys",
-    to: "/app/surveys",
-    icon: MessageSquareText,
-  },
-  {
-    name: "Templates",
-    title: "Templates",
-    to: "/app/templates",
-    icon: LayoutTemplate,
-  },
-  {
-    name: "Contacts",
-    title: "Contacts",
-    to: "/app/contacts",
-    icon: UsersRound,
-  },
-  {
-    name: "Analytics",
-    title: "Analytics",
-    to: "/app/analytics",
-    icon: BarChart3,
-  },
-] satisfies AppNavItem[];
+/**
+ * App navigation is workspace-scoped: every destination lives under
+ * `/app/:workspaceSlug/*`, so the links can only be built once the active
+ * workspace is known.
+ *
+ * Only Dashboard and Surveys have routes today. The rest are intentionally
+ * listed ahead of their implementation and are marked `pending` so the navbar
+ * can render them without pretending they navigate anywhere.
+ */
+export function getAppNavItems(workspaceSlug: string): AppNavItem[] {
+  const base = `/app/${workspaceSlug}`;
+
+  return [
+    {
+      name: "Dashboard",
+      title: "Dashboard",
+      to: `${base}/dashboard`,
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Surveys",
+      title: "Surveys",
+      to: `${base}/surveys`,
+      icon: MessageSquareText,
+    },
+    {
+      name: "Templates",
+      title: "Templates",
+      to: `${base}/templates`,
+      icon: LayoutTemplate,
+      pending: true,
+    },
+    {
+      name: "Contacts",
+      title: "Contacts",
+      to: `${base}/contacts`,
+      icon: UsersRound,
+      pending: true,
+    },
+    {
+      name: "Analytics",
+      title: "Analytics",
+      to: `${base}/analytics`,
+      icon: BarChart3,
+      pending: true,
+    },
+  ];
+}
 
 export const navItems = publicNavItems;
 

@@ -39,13 +39,13 @@ import { useDataTable } from "@/hooks/useDataTable";
 import { cn } from "@/lib/utils";
 
 const statusLabel: Record<SurveyStatus, string> = {
-  active: "Active",
+  published: "Published",
   draft: "Draft",
   closed: "Closed",
 };
 
 const statusClassName: Record<SurveyStatus, string> = {
-  active: "border-green-200 bg-green-50 text-green-700",
+  published: "border-green-200 bg-green-50 text-green-700",
   draft: "border-border bg-secondary text-secondary-foreground",
   closed: "border-border bg-muted text-muted-foreground",
 };

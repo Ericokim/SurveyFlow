@@ -9,17 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AppSurveysRouteImport } from './routes/app/surveys'
+import { Route as AppWorkspaceSlugRouteImport } from './routes/app/$workspaceSlug'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as AppWorkspaceSlugSurveysRouteImport } from './routes/app/$workspaceSlug/surveys'
+import { Route as AppWorkspaceSlugDashboardRouteImport } from './routes/app/$workspaceSlug/dashboard'
 
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -35,70 +32,96 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppSurveysRoute = AppSurveysRouteImport.update({
-  id: '/app/surveys',
-  path: '/app/surveys',
+const AppWorkspaceSlugRoute = AppWorkspaceSlugRouteImport.update({
+  id: '/app/$workspaceSlug',
+  path: '/app/$workspaceSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppWorkspaceSlugSurveysRoute = AppWorkspaceSlugSurveysRouteImport.update({
+  id: '/surveys',
+  path: '/surveys',
+  getParentRoute: () => AppWorkspaceSlugRoute,
+} as any)
+const AppWorkspaceSlugDashboardRoute =
+  AppWorkspaceSlugDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AppWorkspaceSlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/app/surveys': typeof AppSurveysRoute
+  '/api/health': typeof ApiHealthRoute
+  '/app/$workspaceSlug': typeof AppWorkspaceSlugRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/app/$workspaceSlug/dashboard': typeof AppWorkspaceSlugDashboardRoute
+  '/app/$workspaceSlug/surveys': typeof AppWorkspaceSlugSurveysRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/app/surveys': typeof AppSurveysRoute
+  '/api/health': typeof ApiHealthRoute
+  '/app/$workspaceSlug': typeof AppWorkspaceSlugRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/app/$workspaceSlug/dashboard': typeof AppWorkspaceSlugDashboardRoute
+  '/app/$workspaceSlug/surveys': typeof AppWorkspaceSlugSurveysRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/app/surveys': typeof AppSurveysRoute
+  '/api/health': typeof ApiHealthRoute
+  '/app/$workspaceSlug': typeof AppWorkspaceSlugRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/app/$workspaceSlug/dashboard': typeof AppWorkspaceSlugDashboardRoute
+  '/app/$workspaceSlug/surveys': typeof AppWorkspaceSlugSurveysRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
-    | '/app/surveys'
+    | '/api/health'
+    | '/app/$workspaceSlug'
     | '/auth/login'
     | '/auth/register'
+    | '/app/$workspaceSlug/dashboard'
+    | '/app/$workspaceSlug/surveys'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/app/surveys' | '/auth/login' | '/auth/register'
+  to:
+    | '/'
+    | '/api/health'
+    | '/app/$workspaceSlug'
+    | '/auth/login'
+    | '/auth/register'
+    | '/app/$workspaceSlug/dashboard'
+    | '/app/$workspaceSlug/surveys'
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
-    | '/app/surveys'
+    | '/api/health'
+    | '/app/$workspaceSlug'
     | '/auth/login'
     | '/auth/register'
+    | '/app/$workspaceSlug/dashboard'
+    | '/app/$workspaceSlug/surveys'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  AppSurveysRoute: typeof AppSurveysRoute
+  ApiHealthRoute: typeof ApiHealthRoute
+  AppWorkspaceSlugRoute: typeof AppWorkspaceSlugRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -120,20 +143,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/surveys': {
-      id: '/app/surveys'
-      path: '/app/surveys'
-      fullPath: '/app/surveys'
-      preLoaderRoute: typeof AppSurveysRouteImport
+    '/app/$workspaceSlug': {
+      id: '/app/$workspaceSlug'
+      path: '/app/$workspaceSlug'
+      fullPath: '/app/$workspaceSlug'
+      preLoaderRoute: typeof AppWorkspaceSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/$workspaceSlug/surveys': {
+      id: '/app/$workspaceSlug/surveys'
+      path: '/surveys'
+      fullPath: '/app/$workspaceSlug/surveys'
+      preLoaderRoute: typeof AppWorkspaceSlugSurveysRouteImport
+      parentRoute: typeof AppWorkspaceSlugRoute
+    }
+    '/app/$workspaceSlug/dashboard': {
+      id: '/app/$workspaceSlug/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/$workspaceSlug/dashboard'
+      preLoaderRoute: typeof AppWorkspaceSlugDashboardRouteImport
+      parentRoute: typeof AppWorkspaceSlugRoute
     }
   }
 }
 
+interface AppWorkspaceSlugRouteChildren {
+  AppWorkspaceSlugDashboardRoute: typeof AppWorkspaceSlugDashboardRoute
+  AppWorkspaceSlugSurveysRoute: typeof AppWorkspaceSlugSurveysRoute
+}
+
+const AppWorkspaceSlugRouteChildren: AppWorkspaceSlugRouteChildren = {
+  AppWorkspaceSlugDashboardRoute: AppWorkspaceSlugDashboardRoute,
+  AppWorkspaceSlugSurveysRoute: AppWorkspaceSlugSurveysRoute,
+}
+
+const AppWorkspaceSlugRouteWithChildren =
+  AppWorkspaceSlugRoute._addFileChildren(AppWorkspaceSlugRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  AppSurveysRoute: AppSurveysRoute,
+  ApiHealthRoute: ApiHealthRoute,
+  AppWorkspaceSlugRoute: AppWorkspaceSlugRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
 }

@@ -14,7 +14,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
-export type SurveyStatus = "active" | "draft" | "closed";
+export type SurveyStatus = "published" | "draft" | "closed";
 
 export type DashboardMetric = {
   title: string;
@@ -107,7 +107,7 @@ export const recentSurveys: RecentSurvey[] = [
     id: "patient-satisfaction-q2",
     title: "Patient Satisfaction Q2 2024",
     category: "Customer Experience",
-    status: "active",
+    status: "published",
     responses: 1248,
     responseRate: 72.6,
     updatedAt: "May 20, 2024",
@@ -119,7 +119,7 @@ export const recentSurveys: RecentSurvey[] = [
     id: "employee-engagement",
     title: "Employee Engagement Survey",
     category: "Human Resources",
-    status: "active",
+    status: "published",
     responses: 3856,
     responseRate: 65.3,
     updatedAt: "May 19, 2024",
@@ -131,7 +131,7 @@ export const recentSurveys: RecentSurvey[] = [
     id: "nps-may",
     title: "NPS Survey - May 2024",
     category: "Customer Experience",
-    status: "active",
+    status: "published",
     responses: 2145,
     responseRate: 71.2,
     updatedAt: "May 18, 2024",

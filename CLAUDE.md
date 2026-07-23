@@ -1,50 +1,64 @@
+@AGENTS.md
+
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+`AGENTS.md` (imported above) is the canonical project handbook — product context, architecture, repository structure, routing, workflows, conventions, security rules, environment variables, technical debt, and the definition of done. It is shared by Claude Code, Codex, and every other repository-aware agent.
 
-**`AGENTS.md` is the project handbook — read it first.** It holds the verified architecture, stack, routes, conventions, environment variables, security rules, technical debt, and definition of done. This file covers *how to operate* inside SurveyFlow; it does not repeat the handbook.
+This file holds **Claude-specific operating behaviour only**. It does not restate the handbook.
 
 ---
 
 ## 1. The one thing to internalize
 
-SurveyFlow is a **UI-first prototype**. There are no server functions, no API handlers, no `src/server/`, no database, no authentication, no multitenancy enforcement, and no tests in `src/`. Every page renders hardcoded mock data from `src/constants/*.ts`.
+SurveyFlow is a **UI-first prototype**. No server functions, no API handlers, no `src/server/`, no database, no authentication, no multitenancy enforcement, no tests in `src/`. Every page renders hardcoded mock data from `src/constants/*.ts`.
 
-Installed dependencies and installed agent skills are **not** evidence a feature exists. `mongoose`, `jsonwebtoken`, `bcryptjs`, and `twilio` have zero imports. Clerk and the AI SDK are not dependencies at all. Verify in the code before you describe or build on anything.
+Installed dependencies and installed skills are **not** evidence a feature exists. `mongoose`, `jsonwebtoken`, `bcryptjs`, and `twilio` have zero imports. Clerk and the AI SDK are not dependencies at all. Verify in the code before describing or building on anything. Details: `AGENTS.md` §1.1, §2.
 
 ---
 
 ## 2. Before editing
 
 1. Read `AGENTS.md`.
-2. Read the feature files you are about to touch, in full.
-3. Check `package.json` for what is actually installed.
-4. Check the route tree (`src/routeTree.gen.ts`, `src/routes/`) for what actually exists.
-5. Search for an existing implementation before writing a new one (`Grep` for the component, hook, schema, or constant name).
-6. Read the relevant tests — and note when there are none.
-7. Run `git status` to see what is already modified.
-8. Inspect relevant history: `git log --oneline -- <path>`, `git show <commit>`.
-9. Identify the client/server boundary the change sits on.
-10. Confirm the real implementation path rather than the one you assumed.
+2. Inspect `package.json` for what is actually installed.
+3. Inspect the relevant routes (`src/routes/`) and feature files, in full.
+4. Search for an existing implementation before writing a new one (`Grep` the component, hook, schema, or constant name).
+5. Review the relevant tests — and note when there are none.
+6. Run `git status` to see what is already modified.
+7. Inspect relevant history: `git log --oneline -- <path>`, `git show <commit>`.
+8. Identify the client/server boundary the change sits on.
+9. Confirm the authentication and tenant-scoping requirements that apply.
+10. Prepare a focused implementation plan before writing code.
 
 ---
 
 ## 3. Implementation behaviour
 
-- Think like a senior product engineer: understand the workflow before changing code.
+- Work like a senior product engineer: understand the workflow before editing.
 - Prefer minimal, surgical changes. Preserve working architecture.
 - Reuse existing components, hooks, services, models, schemas, and utilities.
-- Follow the existing naming and layering conventions (`AGENTS.md` §3.1).
-- Keep client and server concerns separated.
-- Preserve tenant isolation; validate every server input; authorize server-side.
-- Avoid speculative abstractions — no broad abstraction before two real callers.
-- Avoid unrelated cleanup. If you spot a problem outside your scope, document it instead of fixing it.
+- Preserve naming and layering conventions (`AGENTS.md` §3.1).
+- Keep client and server concerns separate.
+- Validate every server input; authorize server-side; preserve tenant isolation.
+- Avoid speculative abstractions — none before two real callers.
+- Avoid unrelated cleanup. Document out-of-scope problems instead of fixing them.
 - Add tests for behaviour you change.
 
-## 3.1 Project-specific constraints
+### 3.1 KISS and DRY — read `AGENTS.md` §3.2 before writing code
 
-- **npm only.** Never introduce pnpm or yarn.
-- **Never edit `src/routeTree.gen.ts`** — it is generated (`npm run generate-routes`).
+The short version, because it is the most common way work gets rejected here:
+
+- **Simple, readable TypeScript.** No clever generics or type gymnastics. If the type is harder to read than the value, simplify the value.
+- **Search before you create.** A helper, component, constant, type, or model probably already exists — extend it instead of adding a sibling.
+- **Reuse existing folders.** Never create a parallel area (`src/server/workspace` next to `src/features/workspace`). One area, one home.
+- **Comment the why, not the what.** Delete comments that restate the code.
+- **Complexity in one place only**, and only when it makes everything else simpler — say so in the file.
+- **Everything idempotent.** Re-running a seed, migration, or creation must not produce duplicates or half-records.
+- **All tests in `tests/`** (`unit` / `integration` / `e2e`) — never under `src/`.
+
+### 3.2 Repository-specific constraints
+
+- **npm only.** Never pnpm or yarn.
+- **Never edit `src/routeTree.gen.ts`** — generated by `npm run generate-routes`.
 - **Never import from `next/*`.** This is TanStack Start.
 - Generated shadcn components belong in `src/components/ui/` and nowhere else.
 - Use `@/` for app imports.
@@ -55,11 +69,11 @@ Installed dependencies and installed agent skills are **not** evidence a feature
 
 ---
 
-## 4. Survey-specific behaviour
+## 4. Survey safeguards
 
-None of this is built yet, but once it is, these are protected invariants. Do not break them:
+None of this is built yet. Once it is, these are protected invariants:
 
-survey editing · question ordering · section ordering · conditional logic · required-question behaviour · hidden-question behaviour · draft persistence · published-survey behaviour · response submission · response integrity · tenant ownership · export correctness · backwards compatibility with existing survey data.
+survey data compatibility · question ordering · section ordering · conditional logic · required-question behaviour · hidden-question behaviour · draft persistence · publishing behaviour · response integrity · tenant ownership · export correctness.
 
 Changing the shape of stored survey or response data is a migration, not an edit. Get it approved.
 
@@ -67,83 +81,70 @@ Changing the shape of stored survey or response data is a migration, not an edit
 
 ## 5. Clerk guidance
 
-Clerk is **not installed and not used**. The Clerk skills are reference material for future approved auth work, and the auth provider is still undecided (`AGENTS.md` §7).
+Clerk is **not installed and not used**; the auth provider is still undecided (`AGENTS.md` §7). The Clerk skills are reference material for future approved work.
 
-If and when Clerk is adopted:
-
-- Use the existing Clerk helpers rather than hand-rolling session logic.
-- Validate sessions **server-side**; never trust client-only authentication.
-- Preserve organization and user scoping on every query.
-- Never expose Clerk secrets to the client.
-- Test both protected and public flows.
-- Follow `clerk-tanstack-patterns` — the other framework skills do not apply to this stack. Follow a skill only where it matches the repository's actual implementation.
+If Clerk is adopted: use the existing Clerk helpers, validate sessions **server-side**, never trust client-only identity, preserve user and organization scoping, keep secrets server-side, and test both public and protected flows. Use `clerk-tanstack-patterns` — the other framework skills do not apply to this stack. Verify any skill's guidance against the actual repository before applying it.
 
 ---
 
 ## 6. MongoDB guidance
 
-MongoDB is **not connected yet**. When building it (`AGENTS.md` §8):
+Not connected yet. When building it (`AGENTS.md` §8): reuse the existing connection rather than opening one per request; reuse registered Mongoose models and guard registration against recompilation errors; scope tenant-owned queries by `companyId`; validate identifiers; avoid unbounded queries; preserve indexes; handle duplicate-key errors; avoid destructive schema changes.
 
-- Reuse the existing database connection; never open a new one per request.
-- Reuse existing Mongoose models; guard registration to avoid `OverwriteModelError`.
-- Scope tenant-owned queries by `companyId`, always.
-- Validate identifiers before querying.
-- Avoid unbounded queries — paginate or limit.
-- Preserve indexes; handle duplicate-key errors explicitly.
-- No destructive schema changes without approval.
-- **Never run destructive commands against a production database.**
+**Never run destructive production database commands.**
 
 ---
 
 ## 7. Vercel AI SDK guidance
 
-The AI SDK is **not installed** and SurveyFlow has no AI features. **Installing the `ai-sdk` skill does not authorize adding AI functionality to the application.**
+Not installed; SurveyFlow has no AI features. **Installing the `ai-sdk` skill does not authorize introducing AI functionality without an approved product requirement.**
 
-If AI work is ever approved: keep provider keys server-side, follow whatever model abstraction exists at that point, validate user input, protect private survey and response data, handle streaming failures with deterministic fallbacks, test the model-independent logic, and do not hard-code a provider unless the architecture requires it.
+If AI work is approved: keep provider keys server-side, follow whatever abstraction exists then, validate user input, protect private survey data, handle streaming failures with deterministic fallbacks, test the model-independent logic, and do not hard-code a provider unless the architecture requires it.
 
 ---
 
 ## 8. Playwright guidance
 
-Playwright is configured (`playwright.config.ts`, specs in `tests/`) with three Claude subagents in `.claude/agents/` and the `playwright-test` MCP server in `.mcp.json`.
+Configured via `playwright.config.ts` with specs in `tests/`, three Claude subagents in `.claude/agents/`, and the `playwright-test` MCP server in `.mcp.json`.
 
-- Use the installed Playwright agents (planner → generator → healer) for browser verification.
+- Use the generated agents (planner → generator → healer) for browser validation, following the generated Claude loop configuration.
 - Run `npx playwright install chromium` first — browsers are not downloaded yet.
-- Inspect the live application and validate **actual** routes: `/`, `/auth/login`, `/auth/register`, `/dashboard`, `/app/surveys`. Many navbar links point at routes that do not exist.
-- Use stable selectors — accessible roles and labels, not brittle CSS.
-- Verify desktop and mobile behaviour.
-- Cover critical user journeys and capture useful failure context.
-- **Do not rewrite a valid test to hide an application defect.** Fix the app or report the defect.
-- Playwright specs live in `tests/`; Vitest owns `src/`. Keep them separate — `vitest.config.ts` excludes `tests/**` deliberately.
+- Inspect the running application and validate **actual** routes: `/`, `/auth/login`, `/auth/register`, `/dashboard`, `/app/surveys`. Many navbar links point at routes that do not exist.
+- Prefer accessible roles and labels; avoid brittle CSS selectors.
+- Verify desktop, mobile, and scroll behaviour; test critical user journeys; capture useful failure evidence.
+- **Fix application defects rather than weakening a valid test.**
+- Playwright owns `tests/`; Vitest owns `src/`. `vitest.config.ts` excludes `tests/**` deliberately — keep it that way.
 
 ---
 
 ## 9. UI verification
 
-For UI work, verify: correct route · correct layout · responsive behaviour · scroll behaviour · keyboard navigation · focus states · form labels · error messaging · loading states · empty states · touch-target sizes · colour contrast · no unintended regressions.
+For UI work verify: correct route · layout · responsive behaviour · scroll behaviour · keyboard navigation · focus states · form labels · error messaging · loading states · empty states · touch-target sizes · colour contrast · no unintended regressions.
 
 ---
 
-## 10. Required checks
+## 10. Required validation
 
-Discover and run the repository's real scripts. As of now:
+Discover and run the repository's real commands. As of now:
 
 ```bash
 npm run format        # biome format --write
-npm run check         # biome check  — currently 3 PRE-EXISTING errors
-npx tsc --noEmit      # type check   — currently 15 PRE-EXISTING errors
-npm run test          # vitest       — passes (no test files yet)
-npm run build         # vite build   — passes
-npx playwright test   # e2e          — needs `npx playwright install chromium`
+npm run check         # biome check  — 2 PRE-EXISTING errors
+npx tsc --noEmit      # type check   — 15 PRE-EXISTING errors
+npm run test          # vitest: tests/unit + tests/integration
+npm run build         # vite build
+npx dotenv -e .env.local -- npx vitest run tests/integration   # against a real database
+npx playwright test   # e2e — needs `npx playwright install chromium`
+npx @scalar/cli project check-config                           # validate API docs config
 ```
 
 There is no `typecheck` script and `vite build` does not type check.
 
-**`npm run check` and `npx tsc --noEmit` already fail on pre-existing issues** (`AGENTS.md` §21, items 2–3). Compare your run against that baseline and make sure you added nothing new. Never claim a check passed unless you ran it and saw it pass.
+**`npm run check` and `npx tsc --noEmit` already fail on pre-existing issues** (`AGENTS.md` §21, items 2–3). Compare against that baseline and confirm you added nothing new. Never claim a check passed unless you ran it and saw it pass.
 
 ---
 
-## 11. Final report format
+## 11. Final report
 
 Every completed task reports:
 
@@ -165,14 +166,14 @@ Distinguish failures you introduced from failures that were already there.
 
 Do not:
 
-- Expose or print secrets; commit credentials; modify `.env` values unnecessarily
-- Trust client-side identity for authorization, or break tenant isolation
-- Disable tests, or delete failing tests to obtain a green build
-- Suppress meaningful TypeScript errors, add blanket `any`, or disable lint rules globally
+- Expose or print secrets; commit credentials; modify environment values unnecessarily
+- Trust client-only authorization, or break tenant isolation
+- Disable tests, or delete failing tests to obtain a passing result
+- Suppress meaningful TypeScript errors, add unjustified `any`, or disable lint rules globally
+- Duplicate components, hooks, services, models, or utilities
 - Replace working architecture without evidence
-- Introduce duplicate components, hooks, services, models, or utilities
-- Modify unrelated files, or reformat the repository wholesale
+- Modify unrelated files, or reformat the repository unnecessarily
 - Rewrite git history, delete branches, or commit without being asked
 - Remove existing agents or skills
-- **Add Firebase dependencies, Firebase agent skills, Firebase plugins, or Firebase MCP integrations**
+- **Install Firebase dependencies, skills, plugins, or MCP integrations**
 - Claim success without verification

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export type SurveyStatus = "published" | "draft" | "closed";
-export type SurveyAccess = "Open Link" | "Passcode" | "Whitelist Only";
+export type SurveyAccess = "Open Link" | "Whitelist Only";
 
 export type SurveyOwner = {
   name: string;
@@ -85,7 +85,7 @@ export const surveys: SurveyRow[] = [
     status: "closed",
     responses: 412,
     completionRate: 100,
-    access: "Passcode",
+    access: "Whitelist Only",
     lastResponseDate: "May 15, 2024",
     lastResponseTime: "11:03 AM",
     updatedAt: "May 15, 2024",
@@ -150,7 +150,6 @@ export const surveyOwnerFilters: SurveyFilterOption[] = [
 export const surveyAccessFilters: SurveyFilterOption[] = [
   { value: "all", label: "All Modes" },
   { value: "Open Link", label: "Open Link" },
-  { value: "Passcode", label: "Passcode" },
   { value: "Whitelist Only", label: "Whitelist Only" },
 ];
 

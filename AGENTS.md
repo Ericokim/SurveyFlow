@@ -2,7 +2,9 @@
 
 You are a **senior full-stack engineer** working on **SurveyFlow**, a multitenant survey platform.
 
-This file is the project handbook. Read it before changing anything. Every statement here was verified against the repository. Where something is **planned but not built**, this file says so explicitly — do not describe planned architecture as if it exists, and do not assume that an installed dependency or agent skill means the feature is implemented.
+This file is the **canonical project handbook**, shared by Claude Code, Codex, and every other repository-aware agent. `CLAUDE.md` imports it with `@AGENTS.md` and adds only Claude-specific operating behaviour; `.codex/rules/` adds path-scoped Codex rules. When guidance conflicts, this file wins.
+
+Read it before changing anything. Every statement here was verified against the repository. Where something is **planned but not built**, this file says so explicitly — do not describe planned architecture as if it exists, and do not assume that an installed dependency or agent skill means the feature is implemented.
 
 ---
 
@@ -85,8 +87,8 @@ Sentry (`@sentry/tanstackstart-react`) is a special case: `instrument.server.mjs
 # 3. Repository structure
 
 ```
-AGENTS.md                  this handbook
-CLAUDE.md                  operational rules for coding agents (points here)
+AGENTS.md                  this handbook — canonical, shared by all agents
+CLAUDE.md                  Claude Code entry point; imports this file via `@AGENTS.md`
 README.md                  TanStack Start starter docs (largely boilerplate)
 package.json               npm only; Node >= 22.12.0
 biome.json                 lint/format config; ignores .agents, .claude, .codex
@@ -101,7 +103,12 @@ instrument.server.mjs      Sentry server init, preloaded by `npm run dev`
 type.d.ts                  AMBIENT GLOBAL domain types (no import needed)
 image.d.ts                 image module declarations
 .env.example               variable names only
+scalar.config.json         Scalar Docs config — API reference + data model site
+docs/api/openapi.yaml      the HTTP surface (health, public survey, webhooks, exports)
+docs/api/data-model.md     entity relationships + which collections are workspace-scoped
+docs/specs/                accepted design decisions
 docs/                      architecture/feature/rule notes + agentic specs and plans
+tests/{unit,integration,e2e}/  every test in the project
 .agents/skills/            installed agent skills (source of truth)
 .claude/skills/            symlinks into .agents/skills
 .claude/agents/            Playwright subagents (planner, generator, healer)
@@ -124,6 +131,31 @@ tests/                     Playwright e2e specs (seed only)
 - `src/lib/utils.ts` — `cn()` only.
 
 Use `@/` for app imports. Prefer small, typed modules. Do not add a broad abstraction before there are two real callers.
+
+## 3.2 KISS and DRY — non-negotiable
+
+**Write the simplest code that is still correct.** A reviewer who does not know the codebase should understand a file on one read.
+
+- **Plain TypeScript.** No clever generics, no type gymnastics, no indirection that exists only to look general. If a type annotation is harder to read than the value it describes, simplify the value.
+- **One concept per file.** If you cannot summarise a file in one sentence, split it.
+- **Name things for what they are.** `getTenantCompanyId()` beats `resolveContextualScope()`.
+- **Comment the *why*, never the *what*.** Explain the non-obvious constraint (a race, a security boundary, a library quirk). Delete comments that restate the code.
+- **No premature abstraction.** Two real callers before a helper, always.
+- **Complexity is allowed in exactly one place: where it buys simplicity everywhere else.** `tenantScopePlugin` is the example — one intricate file so every query elsewhere stays plain. Say so in the file when you do this.
+
+**Do not repeat yourself.**
+
+- Before writing a helper, component, constant, type, or model, **search for an existing one**. Extend it rather than adding a sibling.
+- Shared errors extend `AppError` (`src/lib/errors.ts`) — never re-declare `status` per class.
+- Shared UI lives in `src/components/shared`; shared pure logic in `src/features/<area>` or `src/lib`.
+- One source of truth per fact. Role names come from `WORKSPACE_ROLES`, statuses from one enum, and so on.
+
+## 3.3 Placement and consistency
+
+- **Reuse existing folders.** Do not create a new top-level folder when an existing area fits. There is one `workspace` area (`src/features/workspace`) and one `auth` area (`src/features/auth`) — server primitives for them live in `src/server/{auth,db,models}`, not in a parallel `src/server/workspace`.
+- **Filenames are kebab-case** (`create-workspace.ts`, `tenant-scope.plugin.ts`). Models are `<name>.model.ts`.
+- **No duplicate files, folders, or concepts.** If two files do nearly the same thing, merge them.
+- **Everything must be idempotent.** Re-running a migration, a seed, an install, or a workspace creation must not produce a second copy or a partial record. Where a write cannot be transactional, use a compensating cleanup and say so in a comment.
 
 ---
 
@@ -236,6 +268,17 @@ These rules predate the implementation and still stand:
 - Keep secrets server-side. Anything prefixed `VITE_` ships to the browser.
 - Instrument server functions with Sentry (`Sentry.startSpan({ name }, async () => { ... })`) once Sentry is actually wired into `src/`.
 
+## 9.1 Documenting the HTTP surface
+
+Server functions are RPC and are **not** documented in OpenAPI. Every real HTTP endpoint is, in `docs/api/openapi.yaml`, and is browsable and executable through Scalar:
+
+```bash
+npx @scalar/cli project check-config     # validate scalar.config.json
+npx @scalar/cli project preview          # local docs on :7970
+```
+
+**When you add or change an API route, update `docs/api/openapi.yaml` in the same change.** Endpoints agreed but not yet built are listed there marked *planned*, so the contract is settled before implementation. `docs/api/data-model.md` holds the entity-relationship diagram and must be updated whenever a collection or relationship changes.
+
 ---
 
 # 10. State management
@@ -325,14 +368,28 @@ The `ai-sdk` agent skill is installed for reference only. **Installing it does n
 
 There are **zero tests in `src/`**. `tests/seed.spec.ts` is Playwright's generated seed (navigates to `/`, asserts the title).
 
-## 14.2 Split of responsibilities
+## 14.2 All tests live in `tests/`
 
-| Runner | Owns | Config |
-|---|---|---|
-| Vitest + Testing Library + jsdom | unit and component tests under `src/` | `vitest.config.ts` (excludes `tests/**`) |
-| Playwright | end-to-end browser specs under `tests/` | `playwright.config.ts` (`testDir: ./tests`) |
+Nothing under `src/` is a test. One tree, three tiers:
 
-The exclusion matters: without it Vitest collects Playwright specs and the suite fails.
+```
+tests/
+  unit/         mirrors src/ — pure logic, no database        (Vitest, jsdom)
+  integration/  needs MONGODB_URI, skipped without it         (Vitest, node)
+  e2e/          browser journeys                              (Playwright)
+```
+
+- `vitest.config.ts` includes `tests/unit` and `tests/integration`.
+- `playwright.config.ts` owns `tests/e2e` only.
+- Tests import source through the `@/` alias, never relative paths.
+- Mirror the source path: `src/features/workspace/slug.ts` → `tests/unit/features/workspace/slug.test.ts`.
+- **Server-side tests need `// @vitest-environment node` as the first line.** Under the default jsdom, `@t3-oss/env-core` sees `window` and refuses to read server-only variables like `MONGODB_URI`.
+
+```bash
+npm run test                                              # unit + integration (integration skips without a DB)
+npx dotenv -e .env.local -- npx vitest run tests/integration   # integration against a real database
+npx playwright test                                       # e2e (needs `npx playwright install chromium`)
+```
 
 ## 14.3 Playwright agents
 

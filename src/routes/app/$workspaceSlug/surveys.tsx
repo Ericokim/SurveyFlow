@@ -17,7 +17,7 @@ import {
 } from "@/features/surveys/surveys-filters";
 import { SurveysTable } from "@/features/surveys/surveys-table";
 
-export const Route = createFileRoute("/app/surveys")({
+export const Route = createFileRoute("/app/$workspaceSlug/surveys")({
   component: SurveysPage,
 });
 

@@ -36,11 +36,10 @@ declare module "@tanstack/react-table" {
   }
 }
 
-type DataTableColumnHeaderProps<TData, TValue> =
-  ComponentProps<"button"> & {
-    column: Column<TData, TValue>;
-    title: string;
-  };
+type DataTableColumnHeaderProps<TData, TValue> = ComponentProps<"button"> & {
+  column: Column<TData, TValue>;
+  title: string;
+};
 
 function getColumnLabel<TData, TValue>(column: Column<TData, TValue>) {
   return (
@@ -61,7 +60,13 @@ function getPageItems(pageIndex: number, pageCount: number) {
   const lastPage = pageCount - 1;
   const previousPage = Math.max(pageIndex - 1, firstPage + 1);
   const nextPage = Math.min(pageIndex + 1, lastPage - 1);
-  const pages = new Set([firstPage, previousPage, pageIndex, nextPage, lastPage]);
+  const pages = new Set([
+    firstPage,
+    previousPage,
+    pageIndex,
+    nextPage,
+    lastPage,
+  ]);
 
   return Array.from(pages)
     .filter((page) => page >= firstPage && page <= lastPage)
@@ -153,9 +158,7 @@ export function DataTableViewOptions<TData>({
   triggerLabel = "Columns",
   ...props
 }: DataTableViewOptionsProps<TData>) {
-  const columns = table
-    .getAllColumns()
-    .filter((column) => column.getCanHide());
+  const columns = table.getAllColumns().filter((column) => column.getCanHide());
 
   if (!columns.length) return null;
 

@@ -14,7 +14,7 @@ import { RecentSurveysTable } from "@/features/dashboard/recent-surveys-table";
 import { ResponsesOverTimeChart } from "@/features/dashboard/responses-over-time-chart";
 import { TopPerformingSurveys } from "@/features/dashboard/top-performing-surveys";
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/app/$workspaceSlug/dashboard")({
   component: Dashboard,
 });
 

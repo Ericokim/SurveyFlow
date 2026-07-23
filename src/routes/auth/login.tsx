@@ -1,13 +1,14 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Mail } from "lucide-react";
+import { useState } from "react";
 import { z } from "zod";
-
 import { AuthPageShell, GoogleMark } from "@/components/shared/AuthPageShell";
 import {
   FormFieldType,
   TanStackFormField,
 } from "@/components/shared/inputs/custom-form-field";
+import { FormError } from "@/components/shared/inputs/form-error";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,16 +19,30 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { signInAuthContent } from "@/constants/auth";
+import { toSafeRedirect } from "@/features/auth/redirect";
+import { loginSchema } from "@/features/auth/schemas";
+import { loginUser } from "@/features/auth/server";
 
-const signInSchema = z.object({
-  email: z.string().trim().email("Enter a valid email address."),
-  password: z.string().min(1, "Password is required."),
-  remember: z.boolean(),
-});
+/** The shared schema plus the UI-only "remember me" checkbox. */
+const signInSchema = loginSchema.extend({ remember: z.boolean() });
 
 type SignInValues = z.input<typeof signInSchema>;
 
 export const Route = createFileRoute("/auth/login")({
+  validateSearch: z.object({
+    /**
+     * Set by the workspace guard so sign-in returns you where you were.
+     *
+     * Attacker-controllable — a phishing link can put anything here. Narrowed
+     * to same-origin paths at parse time and re-checked with `toSafeRedirect`
+     * before navigating.
+     */
+    redirect: z
+      .string()
+      .regex(/^\/(?!\/)/)
+      .optional()
+      .catch(undefined),
+  }),
   component: SignInRoute,
 });
 
@@ -41,6 +56,9 @@ function SignInRoute() {
 
 function SignInForm() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const form = useForm({
     defaultValues: {
       email: "",
@@ -50,9 +68,34 @@ function SignInForm() {
     validators: {
       onSubmit: signInSchema,
     },
-    onSubmit: ({ value }) => {
-      void value;
-      void navigate({ to: "/dashboard" });
+    onSubmit: async ({ value }) => {
+      setServerError(null);
+
+      try {
+        const { workspaceSlug } = await loginUser({
+          data: { email: value.email, password: value.password },
+        });
+
+        // Re-validated here, not just at parse time: never navigate to a
+        // caller-supplied destination without confirming it stays on-origin.
+        const safeRedirect = toSafeRedirect(redirect);
+
+        if (safeRedirect) {
+          await navigate({ href: safeRedirect });
+          return;
+        }
+
+        await navigate({
+          to: "/app/$workspaceSlug/dashboard",
+          params: { workspaceSlug },
+        });
+      } catch (error) {
+        setServerError(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+        );
+      }
     },
   });
 
@@ -79,6 +122,8 @@ function SignInForm() {
             void form.handleSubmit();
           }}
         >
+          <FormError message={serverError} />
+
           <form.Field name="email">
             {(field) => (
               <TanStackFormField

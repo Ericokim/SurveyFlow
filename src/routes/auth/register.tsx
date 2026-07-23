@@ -1,13 +1,14 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Building2, Mail, UserRound } from "lucide-react";
+import { useState } from "react";
 import { z } from "zod";
-
 import { AuthPageShell, GoogleMark } from "@/components/shared/AuthPageShell";
 import {
   FormFieldType,
   TanStackFormField,
 } from "@/components/shared/inputs/custom-form-field";
+import { FormError } from "@/components/shared/inputs/form-error";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { signUpAuthContent } from "@/constants/auth";
+import { registerUser } from "@/features/auth/server";
 
 const signUpSchema = z
   .object({
@@ -50,6 +52,9 @@ function RegisterRoute() {
 }
 
 function SignUpForm() {
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const form = useForm({
     defaultValues: {
       fullName: "",
@@ -62,8 +67,32 @@ function SignUpForm() {
     validators: {
       onSubmit: signUpSchema,
     },
-    onSubmit: ({ value }) => {
-      void value;
+    onSubmit: async ({ value }) => {
+      setServerError(null);
+
+      try {
+        // The organization field seeds the first workspace; registration makes
+        // this person its owner.
+        const { workspaceSlug } = await registerUser({
+          data: {
+            name: value.fullName,
+            email: value.email,
+            password: value.password,
+            workspaceName: value.organization,
+          },
+        });
+
+        await navigate({
+          to: "/app/$workspaceSlug/dashboard",
+          params: { workspaceSlug },
+        });
+      } catch (error) {
+        setServerError(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+        );
+      }
     },
   });
 
@@ -90,6 +119,8 @@ function SignUpForm() {
             void form.handleSubmit();
           }}
         >
+          <FormError message={serverError} />
+
           <div className="grid min-w-0 gap-3 lg:grid-cols-2">
             <form.Field name="fullName">
               {(field) => (

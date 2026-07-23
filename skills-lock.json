@@ -163,6 +163,12 @@
       "skillPath": "skills/review/SKILL.md",
       "computedHash": "1b0bfd542962466b53935c1a992542564d0216d508610645ee9a5432f937c112"
     },
+    "scalar-docs": {
+      "source": "scalar/scalar",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/scalar-docs/SKILL.md",
+      "computedHash": "e9c914429cd1c8540e584e92dc54bc6277058b716903686f74a2a4a1127488f1"
+    },
     "scope": {
       "source": "JavaScript-Mastery-Pro/skills",
       "sourceType": "github",

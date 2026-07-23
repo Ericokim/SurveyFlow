@@ -9,6 +9,8 @@ declare global {
     hash?: string;
     sectionId?: "home" | "features" | "templates" | "pricing" | "resources";
     icon?: LucideIcon;
+    /** Listed in the navbar but not yet routable. */
+    pending?: boolean;
   }
 
   interface AppNavAction {
@@ -43,19 +45,36 @@ declare global {
     updatedAt?: string;
   }
 
+  /**
+   * A person, not a tenant member. `companyId` and `role` deliberately live on
+   * `Membership` instead — a user belongs to many workspaces with a different
+   * role in each. See docs/specs/2026-07-23-multitenant-foundation.md.
+   */
   interface User {
     id: string;
-    companyId: string;
     email: string;
     name: string;
-    role: UserRole;
+    isActive: boolean;
     createdAt?: string;
     updatedAt?: string;
   }
 
-  type UserRole = "owner" | "admin" | "member";
+  /** The join between a person and a workspace. */
+  interface Membership {
+    id: string;
+    userId: string;
+    companyId: string;
+    role: UserRole;
+    invitedBy?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  }
 
-  type SurveyStatus = "draft" | "published" | "archived";
+  type UserRole = "owner" | "admin" | "editor" | "viewer";
+
+  type SurveyStatus = "draft" | "published" | "closed";
+
+  type SurveyAccess = "open" | "whitelist";
 
   interface SurveyQuestion {
     id: string;

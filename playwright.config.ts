@@ -3,11 +3,10 @@ import { defineConfig, devices } from "@playwright/test";
 /**
  * Playwright end-to-end configuration.
  *
- * Specs live in `tests/` so Vitest (which owns `src/**`) and Playwright never
- * collect the same files. See `vitest.config.ts` for the matching exclusion.
+ * Owns `tests/e2e` only; Vitest owns `tests/unit` and `tests/integration`.
  */
 export default defineConfig({
-  testDir: "./tests",
+  testDir: "./tests/e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

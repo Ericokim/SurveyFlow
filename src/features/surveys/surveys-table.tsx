@@ -31,7 +31,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
-import type { SurveyAccess, SurveyRow, SurveyStatus } from "@/constants/surveys";
+import type {
+  SurveyAccess,
+  SurveyRow,
+  SurveyStatus,
+} from "@/constants/surveys";
 import { useDataTable } from "@/hooks/useDataTable";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +53,6 @@ const statusClassName: Record<SurveyStatus, string> = {
 
 const accessIcon: Record<SurveyAccess, typeof Link2> = {
   "Open Link": Link2,
-  Passcode: Lock,
   "Whitelist Only": Lock,
 };
 
