@@ -66,7 +66,7 @@ const Header = () => {
             <img
               src="/brand/logos/surveyflow-wordmark.svg"
               alt="SurveyFlow"
-              className="h-6 sm:h-7 md:h-8 w-auto"
+              className="h-8 sm:h-9 md:h-10 w-auto"
             />
           </Link>
           {/* <nav className="flex gap-4">
