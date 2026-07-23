@@ -6,16 +6,26 @@
 
 **Build a survey once. Publish it as a link. Collect, validate, and analyse the answers — without hard-coding a single form.**
 
-<a href="https://surveyflow-eric.netlify.app"><img alt="Live app" src="https://img.shields.io/badge/live_app-surveyflow--eric.netlify.app-F76046?style=flat-square&labelColor=131A45" /></a>
-<a href="https://surveyflow-api.onrender.com/api/health"><img alt="API health" src="https://img.shields.io/badge/API-health_ok-3B82F6?style=flat-square&labelColor=131A45" /></a>
-<img alt="Unit tests" src="https://img.shields.io/badge/unit_tests-111_passing-22C55E?style=flat-square&labelColor=131A45" />
+<a href="https://surveyflow-eric.netlify.app"><img alt="Live app" src="https://img.shields.io/badge/live_app-surveyflow--eric.netlify.app-F76046?style=flat-square&logo=netlify&logoColor=white&labelColor=131A45" /></a>
+<a href="https://surveyflow-api.onrender.com"><img alt="API reference" src="https://img.shields.io/badge/API_docs-Scalar_reference-3B82F6?style=flat-square&logo=readthedocs&logoColor=white&labelColor=131A45" /></a>
+<a href="https://surveyflow-api.onrender.com/api/health"><img alt="API health" src="https://img.shields.io/badge/health-ok-22C55E?style=flat-square&logo=render&logoColor=white&labelColor=131A45" /></a>
+<img alt="Unit tests" src="https://img.shields.io/badge/unit_tests-117_passing-22C55E?style=flat-square&logo=nodedotjs&logoColor=white&labelColor=131A45" />
 <img alt="License" src="https://img.shields.io/badge/license-ISC-64748B?style=flat-square&labelColor=131A45" />
 
-<sub>
+<br />
 
-`React 19` · `Vite 8` · `TanStack Router` · `TanStack Query` · `Tailwind 4` · `Express 5` · `MongoDB` · `JWT` · `Playwright`
+<img alt="React" src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=131A45" />
+<img alt="Vite" src="https://img.shields.io/badge/Vite_8-646CFF?style=flat-square&logo=vite&logoColor=white" />
+<img alt="TanStack" src="https://img.shields.io/badge/TanStack_Router_·_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white" />
+<img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
+<img alt="Radix UI" src="https://img.shields.io/badge/Radix_UI-161618?style=flat-square&logo=radixui&logoColor=white" />
 
-</sub>
+<img alt="Node.js" src="https://img.shields.io/badge/Node_20+-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white" />
+<img alt="Express" src="https://img.shields.io/badge/Express_5-000000?style=flat-square&logo=express&logoColor=white" />
+<img alt="MongoDB" src="https://img.shields.io/badge/MongoDB_·_Mongoose-47A248?style=flat-square&logo=mongodb&logoColor=white" />
+<img alt="JWT" src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white" />
+<img alt="OpenAPI" src="https://img.shields.io/badge/OpenAPI_3.1-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white" />
+<img alt="Playwright" src="https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white" />
 
 </div>
 
@@ -56,6 +66,8 @@ around both halves.
 |---|---|---|
 | Client | Netlify | <https://surveyflow-eric.netlify.app> |
 | API | Render | <https://surveyflow-api.onrender.com> |
+| **API reference** | Render | <https://surveyflow-api.onrender.com> — interactive Scalar docs at the API root |
+| OpenAPI document | Render | <https://surveyflow-api.onrender.com/openapi.json> |
 | Health probe | Render | <https://surveyflow-api.onrender.com/api/health> |
 
 > [!NOTE]
@@ -192,6 +204,7 @@ SurveyFlow/
 ├── server/
 │   ├── server.js               entry: middleware, /api mount, shutdown
 │   ├── config/                 database connection
+│   ├── docs/openapi.js         OpenAPI 3.1 document — rendered by Scalar at /
 │   ├── routes/                 express routers, mounted by routes/index.js
 │   ├── controllers/            request handlers
 │   ├── services/               branding, email, http, upload
@@ -231,6 +244,17 @@ dropdown, rating, date.
 ## HTTP surface
 
 Everything mounts under `/api` from `server/routes/index.js`.
+
+> [!TIP]
+> **Interactive reference:** <https://surveyflow-api.onrender.com> — all 52 endpoints
+> with schemas, auth, and runnable requests, rendered by [Scalar](https://scalar.com)
+> from `server/docs/openapi.js`. The raw document is at
+> [`/openapi.json`](https://surveyflow-api.onrender.com/openapi.json); locally it is
+> <http://localhost:5001>.
+>
+> The spec is hand-authored so request bodies mirror the Joi validators, and
+> `server/tests/unit/openapiCoverage.test.mjs` fails the build if any `@route`
+> annotation goes undocumented — the docs cannot silently drift from the router.
 
 | Router | Prefix | Covers |
 |---|---|---|
@@ -397,7 +421,12 @@ section skips, public response flows, and branding settings.
 | Suite | Tests | Result |
 |---|---|---|
 | Client unit | 73 | passing |
-| Server unit | 38 | passing |
+| Server unit | 44 | passing |
+| **Total** | **117** | **passing** |
+
+Six of the server tests are the OpenAPI coverage suite, which asserts that all 52
+`@route` annotations are documented, that no documented operation is orphaned,
+that every `$ref` resolves, and that authenticated operations declare bearer auth.
 
 ---
 
@@ -422,9 +451,11 @@ flowchart LR
 
 | Concern | Netlify (client) | Render (API) |
 |---|---|---|
+| Live URL | <https://surveyflow-eric.netlify.app> | <https://surveyflow-api.onrender.com> |
 | Build | `npm run build` in `client/`, publish `dist` | `npm install` at the root |
 | Start | static | `node server/server.js` |
-| Health | — | `/api/health` |
+| Health | — | [`/api/health`](https://surveyflow-api.onrender.com/api/health) |
+| API docs | — | [`/`](https://surveyflow-api.onrender.com) (Scalar) · [`/openapi.json`](https://surveyflow-api.onrender.com/openapi.json) |
 | SPA routing | `/*` → `/index.html` (200) so TanStack Router owns deep links | — |
 | Key env | `VITE_API_URL` | `MONGO_URI`, `JWT_SECRET`, `FRONTEND_URL`, AWS/SMS |
 
