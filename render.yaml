@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: surveyflow-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: master
+    # Root package.json holds the server deps; skip the client build here.
+    buildCommand: npm install
+    startCommand: node server/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render injects PORT; server.js already reads process.env.PORT.
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRY
+        value: 24h
+      - key: JWT_REFRESH_EXPIRY
+        value: 7d
+      # Set to the Netlify site URL once it exists.
+      - key: FRONTEND_URL
+        sync: false
+      - key: SMS_API_KEY
+        sync: false
+      - key: SMS_USERNAME
+        sync: false
+      - key: SMS_SENDER_ID
+        value: SurveyFlow
+      - key: SMS_GATEWAY_URL
+        value: https://api.africastalking.com/version1/messaging
+      - key: COMMS_API_URL
+        sync: false
+      - key: COMMS_APP_ID
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_BUCKET_NAME
+        sync: false
