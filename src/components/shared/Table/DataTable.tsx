@@ -17,7 +17,9 @@ type DataTableProps<TData> = ComponentProps<"div"> & {
   actionBar?: ReactNode;
   containerClassName?: string;
   emptyMessage?: string;
+  itemLabel?: string;
   paginationClassName?: string;
+  pageSizeOptions?: number[];
   showPagination?: boolean;
 };
 
@@ -28,7 +30,9 @@ export function DataTable<TData>({
   className,
   containerClassName,
   emptyMessage = "No results.",
+  itemLabel,
   paginationClassName,
+  pageSizeOptions,
   showPagination = true,
   ...props
 }: DataTableProps<TData>) {
@@ -106,7 +110,12 @@ export function DataTable<TData>({
         </Table>
       </div>
       {showPagination ? (
-        <DataTablePagination className={paginationClassName} table={table} />
+        <DataTablePagination
+          className={paginationClassName}
+          itemLabel={itemLabel}
+          pageSizeOptions={pageSizeOptions}
+          table={table}
+        />
       ) : null}
       {actionBar && table.getFilteredSelectedRowModel().rows.length > 0
         ? actionBar

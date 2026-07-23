@@ -5,13 +5,11 @@ import Navbar from "@/components/shared/Navbar";
 import { Button } from "@/components/ui/button";
 import {
   dashboardMetrics,
-  quickActions,
   recentSurveys,
   responsePoints,
   topSurveys,
 } from "@/constants/dashboard";
 import { DashboardMetricCard } from "@/features/dashboard/dashboard-metric-card";
-import { QuickActions } from "@/features/dashboard/quick-actions";
 import { RecentSurveysTable } from "@/features/dashboard/recent-surveys-table";
 import { ResponsesOverTimeChart } from "@/features/dashboard/responses-over-time-chart";
 import { TopPerformingSurveys } from "@/features/dashboard/top-performing-surveys";
@@ -35,8 +33,11 @@ function Dashboard() {
             </p>
           </div>
 
-          <Button className="h-12 w-full gap-2 rounded-lg px-7 font-semibold sm:w-auto">
-            <Plus aria-hidden="true" />
+          <Button
+            size="sm"
+            className="h-9 w-full gap-1.5 rounded-lg px-3.5 font-semibold sm:w-auto"
+          >
+            <Plus className="size-4" aria-hidden="true" />
             New Survey
           </Button>
         </div>
@@ -50,18 +51,13 @@ function Dashboard() {
           ))}
         </section>
 
-        <section className="grid min-w-0 gap-5 xl:grid-cols-12 [&>*]:min-w-0">
-          <div className="min-w-0 xl:col-span-7">
-            <RecentSurveysTable data={recentSurveys} />
-          </div>
-          <div className="min-w-0 xl:col-span-5">
-            <ResponsesOverTimeChart data={responsePoints} />
-          </div>
+        <section className="grid min-w-0 gap-5 xl:grid-cols-2 [&>*]:min-w-0">
+          <RecentSurveysTable data={recentSurveys} />
+          <TopPerformingSurveys data={topSurveys} />
         </section>
 
-        <section className="grid min-w-0 gap-5 xl:grid-cols-2 [&>*]:min-w-0">
-          <TopPerformingSurveys data={topSurveys} />
-          <QuickActions data={quickActions} />
+        <section className="min-w-0">
+          <ResponsesOverTimeChart data={responsePoints} />
         </section>
       </main>
     </div>

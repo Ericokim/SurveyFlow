@@ -84,7 +84,7 @@ export function ResponsesOverTimeChart({ data }: ResponsesOverTimeChartProps) {
                 tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
                 tickLine={false}
                 axisLine={{ stroke: "var(--border)" }}
-                interval={5}
+                interval={6}
               />
               <YAxis
                 tickFormatter={formatAxis}
