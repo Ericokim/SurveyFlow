@@ -1,0 +1,290 @@
+{
+  "survey": {
+    "_id": "survey-dynamic-logic-1",
+    "publicId": "pub-dynamic-logic-1",
+    "title": "Dynamic Logic Fixture Survey",
+    "description": "Fixture-driven coverage for survey jump logic",
+    "status": "draft",
+    "type": "open_ended",
+    "settings": {
+      "presentationMode": "multi_step",
+      "isSectional": true,
+      "autoAdvanceThreshold": null
+    },
+    "themeColor": "#10B981",
+    "thankYouMessage": "Thank you for completing this survey!",
+    "showProgress": true,
+    "oneResponsePerRecipient": true,
+    "isWhitelistEnabled": false,
+    "sections": [
+      {
+        "id": "bio",
+        "title": "Bio",
+        "order": 0,
+        "questionIds": ["q1", "q3", "q4", "q5"]
+      },
+      {
+        "id": "work",
+        "title": "Work",
+        "order": 1,
+        "questionIds": ["w1", "w2", "w3"]
+      }
+    ],
+    "questions": [
+      {
+        "id": "q1",
+        "type": "short_text",
+        "title": "Name?",
+        "order": 1,
+        "sectionId": "bio",
+        "required": true
+      },
+      {
+        "id": "q3",
+        "type": "single_choice",
+        "title": "Nationality?",
+        "options": ["Kenyan", "Other", "African", "TopWork", "Exit", "Continue"],
+        "order": 3,
+        "sectionId": "bio",
+        "required": true
+      },
+      {
+        "id": "q4",
+        "type": "short_text",
+        "title": "Select your African country of origin",
+        "order": 4,
+        "sectionId": "bio",
+        "required": false
+      },
+      {
+        "id": "q5",
+        "type": "short_text",
+        "title": "Specify your Nationality",
+        "order": 5,
+        "sectionId": "bio",
+        "required": false
+      },
+      {
+        "id": "w1",
+        "type": "short_text",
+        "title": "Field of expertise?",
+        "order": 6,
+        "sectionId": "work",
+        "required": false
+      },
+      {
+        "id": "w2",
+        "type": "short_text",
+        "title": "Years of experience",
+        "order": 7,
+        "sectionId": "work",
+        "required": false
+      },
+      {
+        "id": "w3",
+        "type": "short_text",
+        "title": "Motivation letter",
+        "order": 8,
+        "sectionId": "work",
+        "required": false
+      }
+    ],
+    "visibilityRules": [],
+    "navigationRules": [
+      {
+        "id": "nav-q3-kenyan-w2",
+        "fromSectionId": "bio",
+        "priority": 100,
+        "when": { "questionId": "q3", "operator": "equals", "value": "Kenyan" },
+        "action": { "type": "jump_to_question", "targetQuestionId": "w2" }
+      },
+      {
+        "id": "nav-q3-other-q5",
+        "fromSectionId": "bio",
+        "priority": 90,
+        "when": { "questionId": "q3", "operator": "equals", "value": "Other" },
+        "action": { "type": "jump_to_question", "targetQuestionId": "q5" }
+      },
+      {
+        "id": "nav-q3-african-q4",
+        "fromSectionId": "bio",
+        "priority": 80,
+        "when": { "questionId": "q3", "operator": "equals", "value": "African" },
+        "action": { "type": "jump_to_question", "targetQuestionId": "q4" }
+      },
+      {
+        "id": "nav-q3-top-work",
+        "fromSectionId": "bio",
+        "priority": 70,
+        "when": { "questionId": "q3", "operator": "equals", "value": "TopWork" },
+        "action": { "type": "jump", "targetSectionId": "work" }
+      },
+      {
+        "id": "nav-q3-exit",
+        "fromSectionId": "bio",
+        "priority": 60,
+        "when": { "questionId": "q3", "operator": "equals", "value": "Exit" },
+        "action": { "type": "terminate" }
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "cross_section_question_jump",
+      "answer": "Kenyan",
+      "expected": {
+        "action": "jump_question",
+        "targetSectionId": "work",
+        "targetQuestionId": "w2",
+        "targetQuestionTitle": "Years of experience"
+      }
+    },
+    {
+      "id": "same_section_question_jump_other",
+      "answer": "Other",
+      "expected": {
+        "action": "jump_question",
+        "targetSectionId": "bio",
+        "targetQuestionId": "q5",
+        "targetQuestionTitle": "Specify your Nationality"
+      }
+    },
+    {
+      "id": "same_section_question_jump_african",
+      "answer": "African",
+      "expected": {
+        "action": "jump_question",
+        "targetSectionId": "bio",
+        "targetQuestionId": "q4",
+        "targetQuestionTitle": "Select your African country of origin"
+      }
+    },
+    {
+      "id": "section_top_jump",
+      "answer": "TopWork",
+      "expected": {
+        "action": "jump_section",
+        "targetSectionId": "work",
+        "targetQuestionId": "w1",
+        "targetQuestionTitle": "Field of expertise?"
+      }
+    },
+    {
+      "id": "terminate",
+      "answer": "Exit",
+      "expected": {
+        "action": "terminate"
+      }
+    },
+    {
+      "id": "fallback_continue",
+      "answer": "Continue",
+      "expected": {
+        "action": "fallback"
+      }
+    }
+  ],
+  "questionFlowSurvey": {
+    "_id": "survey-dynamic-question-flow-1",
+    "publicId": "pub-dynamic-question-flow-1",
+    "title": "Dynamic Question Flow Fixture Survey",
+    "description": "Fixture-driven coverage for question-based jump logic",
+    "status": "draft",
+    "type": "open_ended",
+    "settings": {
+      "presentationMode": "single_page",
+      "isSectional": false,
+      "autoAdvanceThreshold": null
+    },
+    "themeColor": "#3B82F6",
+    "thankYouMessage": "Thank you for completing this survey!",
+    "showProgress": true,
+    "oneResponsePerRecipient": true,
+    "isWhitelistEnabled": false,
+    "sections": [],
+    "questions": [
+      {
+        "id": "qq1",
+        "type": "single_choice",
+        "title": "Path choice",
+        "options": ["Yes", "No", "Continue"],
+        "order": 1,
+        "required": true
+      },
+      {
+        "id": "qq8",
+        "type": "short_text",
+        "title": "Q8",
+        "order": 8,
+        "required": true
+      },
+      {
+        "id": "qq9",
+        "type": "short_text",
+        "title": "Q9",
+        "order": 9,
+        "required": true
+      }
+    ],
+    "visibilityRules": [],
+    "navigationRules": [
+      {
+        "id": "nav-qq1-yes-qq9",
+        "fromSectionId": null,
+        "priority": 10,
+        "when": { "questionId": "qq1", "operator": "equals", "value": "Yes" },
+        "action": { "type": "jump_to_question", "targetQuestionId": "qq9" }
+      },
+      {
+        "id": "nav-qq1-no-qq8",
+        "fromSectionId": null,
+        "priority": 9,
+        "when": { "questionId": "qq1", "operator": "equals", "value": "No" },
+        "action": { "type": "jump_to_question", "targetQuestionId": "qq8" }
+      }
+    ]
+  },
+  "questionFlowScenarios": [
+    {
+      "id": "question_flow_jump_q9",
+      "answer": "Yes",
+      "expected": {
+        "action": "jump_question",
+        "targetQuestionId": "qq9",
+        "targetQuestionTitle": "Q9"
+      }
+    },
+    {
+      "id": "question_flow_jump_q8",
+      "answer": "No",
+      "expected": {
+        "action": "jump_question",
+        "targetQuestionId": "qq8",
+        "targetQuestionTitle": "Q8"
+      }
+    },
+    {
+      "id": "question_flow_fallback",
+      "answer": "Continue",
+      "expected": {
+        "action": "fallback"
+      }
+    }
+  ],
+  "forwardOnlyInvalidRules": [
+    {
+      "id": "invalid-self",
+      "fromSectionId": "bio",
+      "priority": 1,
+      "when": { "questionId": "q3", "operator": "equals", "value": "Kenyan" },
+      "action": { "type": "jump_to_question", "targetQuestionId": "q3" }
+    },
+    {
+      "id": "invalid-backward",
+      "fromSectionId": "bio",
+      "priority": 1,
+      "when": { "questionId": "q3", "operator": "equals", "value": "Kenyan" },
+      "action": { "type": "jump_to_question", "targetQuestionId": "q1" }
+    }
+  ]
+}
