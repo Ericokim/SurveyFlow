@@ -28,6 +28,27 @@ const authLimiter = rateLimit({
   message: "Too many authentication attempts, please try again later.",
 });
 
+// API index. The human-readable reference now lives at the server root, so this
+// keeps a machine-readable welcome payload available for clients probing /api.
+router.get("/", (req, res) => {
+  res.json({
+    status: {
+      code: 200,
+      message: "Welcome to the Universal Survey CMS API",
+    },
+    data: [
+      {
+        name: "SurveyFlow API",
+        version: "1.0.0",
+        environment: process.env.NODE_ENV || "development",
+        documentation: "/",
+        openapi: "/openapi.json",
+      },
+    ],
+    paging: null,
+  });
+});
+
 // API health check with service status
 router.get("/health", (req, res) => {
   const s3Status = getS3Status();

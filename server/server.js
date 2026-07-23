@@ -14,6 +14,8 @@ import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import { createRequestIdMiddleware } from "./middleware/utilityMiddleware.js";
 import { logger } from "./utils/logger.js";
 import apiRoutes from "./routes/index.js";
+import { apiReference } from "@scalar/express-api-reference";
+import { openapiSpec } from "./docs/openapi.js";
 
 // Load environment variables
 if (process.env.NODE_ENV !== "production") {
@@ -74,24 +76,39 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // // Apply general rate limiting to all routes
 // app.use(generalLimiter);
 
-// Root endpoint
-app.get("/", (req, res) => {
-  res.json({
-    status: {
-      code: 200,
-      message: "Welcome to the Universal Survey CMS API",
+// The Scalar reference is rendered client-side from a CDN bundle plus an inline
+// bootstrap script, both of which the global helmet CSP would block. Relax the
+// policy for the documentation routes only — the API itself keeps the defaults.
+const docsSecurity = helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://cdn.jsdelivr.net"],
     },
-    data: [
-      {
-        name: "SurveyFlow API",
-        version: "1.0.0",
-        environment: nodeEnv,
-        documentation: "/api/health",
-      },
-    ],
-    paging: null,
-  });
+  },
+  crossOriginEmbedderPolicy: false,
 });
+
+// Machine-readable contract.
+app.get("/openapi.json", docsSecurity, (req, res) => {
+  res.json(openapiSpec);
+});
+
+// Human-readable reference at the API root.
+// Registered with `app.get` rather than `app.use` — the Scalar handler answers
+// every request it receives, so mounting it as middleware would swallow /api.
+app.get(
+  "/",
+  docsSecurity,
+  apiReference({
+    url: "/openapi.json",
+    pageTitle: "SurveyFlow API Reference",
+  })
+);
 
 // Use centralized API routes
 app.use("/api", apiRoutes);

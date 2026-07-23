@@ -144,6 +144,10 @@ count.txt
 .claude
 */agents
 docs
+# ...but server/docs holds application source (the OpenAPI document the API
+# serves at /), not generated notes. Without this the server fails to boot in
+# production with an unresolvable import.
+!server/docs/
 .mcp/
 .mcp.json
 
