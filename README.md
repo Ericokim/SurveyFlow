@@ -1,97 +1,97 @@
+<div align="center">
+
+<img src="client/public/brand/logos/surveyflow-mark.png" alt="SurveyFlow" width="104" />
+
 # SurveyFlow
 
-Schema-driven survey platform. Build a survey once, publish it as a public link,
-collect responses from whitelisted recipients, and read the results back as
-analytics and exports — without hard-coding a single form.
+**Build a survey once. Publish it as a link. Collect, validate, and analyse the answers — without hard-coding a single form.**
 
-```
-Author  →  Publish  →  Distribute  →  Collect  →  Analyse
-editor     public link   link / QR / SMS   respondent   dashboards
-                                            pages       + exports
+<a href="https://surveyflow-eric.netlify.app"><img alt="Live app" src="https://img.shields.io/badge/live_app-surveyflow--eric.netlify.app-F76046?style=flat-square&labelColor=131A45" /></a>
+<a href="https://surveyflow-api.onrender.com/api/health"><img alt="API health" src="https://img.shields.io/badge/API-health_ok-3B82F6?style=flat-square&labelColor=131A45" /></a>
+<img alt="Unit tests" src="https://img.shields.io/badge/unit_tests-111_passing-22C55E?style=flat-square&labelColor=131A45" />
+<img alt="License" src="https://img.shields.io/badge/license-ISC-64748B?style=flat-square&labelColor=131A45" />
+
+<sub>
+
+`React 19` · `Vite 8` · `TanStack Router` · `TanStack Query` · `Tailwind 4` · `Express 5` · `MongoDB` · `JWT` · `Playwright`
+
+</sub>
+
+</div>
+
+---
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#F76046','primaryTextColor':'#ffffff','primaryBorderColor':'#E54F36','lineColor':'#3B82F6','secondaryColor':'#3B82F6','tertiaryColor':'#D9E7F1','fontFamily':'ui-sans-serif, system-ui, sans-serif'}}}%%
+flowchart LR
+    A("<b>Author</b><br/>editor")     --> B("<b>Publish</b><br/>public link")
+    B --> C("<b>Distribute</b><br/>link · QR · SMS")
+    C --> D("<b>Collect</b><br/>respondent pages")
+    D --> E("<b>Analyse</b><br/>dashboards + exports")
 ```
 
-Node/Express API, MongoDB via Mongoose, React 19 front end on Vite.
+SurveyFlow is a full-stack MERN survey platform. An authenticated admin workspace
+authors schema-driven questionnaires; public respondent pages collect the answers;
+recipient whitelisting, branding, SMS invitations, analytics, and exports wrap
+around both halves.
 
 ---
 
 ## Contents
 
-- [Why it is built this way](#why-it-is-built-this-way)
-- [Repository layout](#repository-layout)
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Configuration](#configuration)
-- [Running](#running)
-- [Seed data](#seed-data)
-- [Domain model](#domain-model)
-- [HTTP surface](#http-surface)
-- [Screens](#screens)
-- [Authentication](#authentication)
-- [Design tokens](#design-tokens)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Keeping this document honest](#keeping-this-document-honest)
+| Getting started | The system | Reference |
+|---|---|---|
+| [Live environments](#live-environments) | [Design decisions](#design-decisions) | [HTTP surface](#http-surface) |
+| [Prerequisites](#prerequisites) | [Repository layout](#repository-layout) | [Screens](#screens) |
+| [Setup](#setup) | [Domain model](#domain-model) | [Design tokens](#design-tokens) |
+| [Configuration](#configuration) | [Authentication](#authentication) | [Scripts](#scripts) |
+| [Running](#running) | [Testing](#testing) | [Deployment](#deployment) |
+| [Seed data](#seed-data) | | [Maintaining this document](#maintaining-this-document) |
 
 ---
 
-## Why it is built this way
+## Live environments
 
-Three decisions shape most of the codebase:
+| Tier | Host | URL |
+|---|---|---|
+| Client | Netlify | <https://surveyflow-eric.netlify.app> |
+| API | Render | <https://surveyflow-api.onrender.com> |
+| Health probe | Render | <https://surveyflow-api.onrender.com/api/health> |
 
-**Surveys are data, not code.** A survey is a document of sections and
-questions with rules attached. Nothing about a specific questionnaire is
-compiled into the app, so adding a question type is a renderer change rather
-than a migration.
-
-**Branching logic runs on both sides.** `server/utils/logicEngine.js` and
-`client/src/lib/utils/logicEngine.js` are deliberate twins. The client needs the
-rules to decide what to show next; the server needs the same rules to decide
-what it will accept. Keeping them in sync is a maintenance cost paid on purpose
-— if you change one, change the other, and the logic-engine unit tests will tell
-you when you have not.
-
-**Editor preview, public response, and response detail share one renderer.**
-A question looks and behaves the same in all three contexts because all three
-mount the same components against the same schema.
+> [!NOTE]
+> The API runs on Render's free tier, which sleeps after inactivity. The first
+> request after an idle period can take ~50 seconds to wake the instance.
 
 ---
 
-## Repository layout
+## Design decisions
 
-```
-SurveyFlow/
-├── client/                     React 19 + Vite — see client/README.md
-│   ├── src/app/                provider tree, router, context
-│   ├── src/routes/             file-based TanStack routes
-│   ├── src/pages/              route-level screens
-│   ├── src/components/         editor, renderer, analytics, shared, ui
-│   ├── src/lib/api/            axios modules, one per API domain
-│   ├── src/lib/queries/        TanStack Query hooks
-│   ├── src/lib/utils/          survey, logic, export, presentation helpers
-│   ├── src/stores/             zustand auth store
-│   ├── src/styles/theme.css    design tokens — the palette lives here
-│   ├── public/brand/logos/     SurveyFlow mark and wordmark
-│   └── tests/                  node:test unit specs, Playwright e2e
-├── server/
-│   ├── server.js               entry: middleware, /api mount, shutdown
-│   ├── config/                 database connection
-│   ├── routes/                 express routers, mounted by routes/index.js
-│   ├── controllers/            request handlers
-│   ├── services/               branding, email, http, upload
-│   ├── models/                 mongoose schemas
-│   ├── middleware/             auth, validation, request id, errors
-│   ├── utils/                  logging, responses, logicEngine, s3, paging
-│   ├── data/                   seed fixtures + IEQ dataset
-│   └── tests/                  unit + integration specs
-└── package.json                root scripts drive both halves
-```
+Three choices shape most of the codebase.
+
+> **Surveys are data, not code.**
+> A survey is a document of sections and questions with rules attached. Nothing
+> about a specific questionnaire is compiled into the app, so adding a question
+> type is a renderer change rather than a migration.
+
+> **Branching logic runs on both sides.**
+> `server/utils/logicEngine.js` and `client/src/lib/utils/logicEngine.js` are
+> deliberate twins. The client needs the rules to decide what to show next; the
+> server needs the same rules to decide what it will accept. Keeping them in sync
+> is a maintenance cost paid on purpose — change one, change the other, and the
+> logic-engine unit tests will tell you when you have not.
+
+> **One renderer, three contexts.**
+> Editor preview, public response, and response detail mount the same components
+> against the same schema, so a question looks and behaves identically in all three.
 
 ---
 
 ## Prerequisites
 
-- Node.js 20 or newer
-- A MongoDB instance (local `mongod` or an Atlas cluster)
+| Requirement | Version |
+|---|---|
+| Node.js | 20 or newer (Netlify builds on 22) |
+| MongoDB | Local `mongod` or an Atlas cluster |
 
 ---
 
@@ -112,25 +112,31 @@ cp .env.example .env           # then fill it in
 ## Configuration
 
 `.env` at the repository root configures the API. Vite reads that same file for
-the client and lets `client/.env*` override it; only `VITE_`-prefixed values
+the client and lets `client/.env*` override it; only `VITE_`-prefixed values ever
 reach browser code.
 
 | Variable | Required | Notes |
 |---|---|---|
-| `PORT` | no | API port. Defaults to `5001`. |
+| `PORT` | no | API port. Defaults to `5001`. Render injects its own. |
 | `NODE_ENV` | no | `development` or `production`. |
 | `MONGO_URI` | **yes** | MongoDB connection string. |
 | `JWT_SECRET` | **yes** | Signing secret, 256 bits or more. |
 | `JWT_EXPIRY` / `JWT_REFRESH_EXPIRY` | no | Token lifetimes. |
-| `FRONTEND_URL` | yes in prod | Client origin, used for CORS. |
+| `FRONTEND_URL` | yes in prod | Client origin. Builds distribution and password-reset links. |
 | `SMS_API_KEY` / `SMS_USERNAME` / `SMS_SENDER_ID` | no | SMS invitations. Leave blank to disable. |
 | `COMMS_API_URL` / `COMMS_APP_ID` | no | External comms API. Blank logs email to the console. |
 | `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_S3_BUCKET_NAME` | no | S3 asset storage. |
 | `DEV_BYPASS_AUTH` / `DEV_USER_ID` / `DEV_COMPANY_ID` | no | Development-only auth bypass. See [Authentication](#authentication). |
 | `VITE_API_URL` | no | API origin *without* `/api`; the axios client appends it. Unset means same-origin `/api`. |
 
-`.env` and `.env.local` are gitignored. Keep real credentials out of
-`.env.example`.
+`.env` and `.env.local` are gitignored. Keep real credentials out of `.env.example`.
+
+> [!WARNING]
+> A `VITE_API_URL` exported in your **shell** outranks every `client/.env*` file,
+> because Vite gives real environment variables precedence. If a production build
+> mysteriously points at `localhost`, check `echo $VITE_API_URL` before anything
+> else, and override it explicitly:
+> `VITE_API_URL="https://surveyflow-api.onrender.com" npm run build`.
 
 ---
 
@@ -167,6 +173,40 @@ logic-engine suites run against it rather than against toy input.
 
 ---
 
+## Repository layout
+
+```
+SurveyFlow/
+├── client/                     React 19 + Vite — see client/README.md
+│   ├── src/app/                provider tree, router, context
+│   ├── src/routes/             file-based TanStack routes
+│   ├── src/pages/              route-level screens
+│   ├── src/components/         editor, renderer, analytics, shared, ui
+│   ├── src/lib/api/            axios modules, one per API domain
+│   ├── src/lib/queries/        TanStack Query hooks
+│   ├── src/lib/utils/          survey, logic, export, presentation helpers
+│   ├── src/stores/             zustand auth store
+│   ├── src/styles/theme.css    design tokens — the palette lives here
+│   ├── public/brand/logos/     SurveyFlow mark and wordmark
+│   └── tests/                  node:test unit specs, Playwright e2e
+├── server/
+│   ├── server.js               entry: middleware, /api mount, shutdown
+│   ├── config/                 database connection
+│   ├── routes/                 express routers, mounted by routes/index.js
+│   ├── controllers/            request handlers
+│   ├── services/               branding, email, http, upload
+│   ├── models/                 mongoose schemas
+│   ├── middleware/             auth, validation, request id, errors
+│   ├── utils/                  logging, responses, logicEngine, s3, paging
+│   ├── data/                   seed fixtures + IEQ dataset
+│   └── tests/                  unit + integration specs
+├── netlify.toml                client build + SPA fallback
+├── render.yaml                 API service blueprint
+└── package.json                root scripts drive both halves
+```
+
+---
+
 ## Domain model
 
 | Model | Holds |
@@ -183,8 +223,8 @@ Versioning is what makes in-flight responses safe: publishing snapshots the
 survey, so editing a live survey cannot retroactively change what a respondent
 already saw.
 
-Supported question types: short text, long text, single choice, multiple
-choice, dropdown, rating, date.
+**Question types** — short text, long text, single choice, multiple choice,
+dropdown, rating, date.
 
 ---
 
@@ -202,9 +242,8 @@ Everything mounts under `/api` from `server/routes/index.js`.
 | `responses.routes.js` | `/api/r/:publicId`, `/api/admin` | Public fetch, whitelist check, progress save, preview and live submit; admin list, detail, delete, recipient reset. |
 | `analytics.routes.js` | `/api/surveys/:id/analytics` | Survey and per-question analytics, response/recipient/respondent exports. |
 
-Request flow:
-
 ```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#F76046','primaryTextColor':'#ffffff','primaryBorderColor':'#E54F36','lineColor':'#3B82F6','secondaryColor':'#3B82F6','tertiaryColor':'#D9E7F1','fontFamily':'ui-sans-serif, system-ui, sans-serif'}}}%%
 sequenceDiagram
     participant UI as React page
     participant Q as Query hook
@@ -230,7 +269,7 @@ sequenceDiagram
 Routes are declared as files in `client/src/routes/` and compiled into
 `client/src/routeTree.gen.js` by `npm run route:generate`.
 
-Public — no session required:
+**Public** — no session required:
 
 | Path | Screen |
 |---|---|
@@ -241,7 +280,7 @@ Public — no session required:
 | `/r/$publicId/test` | Test mode — submissions are not recorded. |
 | `/preview/draft` | Draft preview launched from the editor. |
 
-Authenticated workspace:
+**Authenticated workspace:**
 
 | Path | Screen |
 |---|---|
@@ -254,23 +293,49 @@ Authenticated workspace:
 
 ## Authentication
 
-The API issues a JWT on login. The client keeps it locally, the axios
-interceptor attaches it to every request, and a 401 outside the public
-respondent routes clears the session and returns to `/login`.
+The API issues a JWT on login. The client keeps it locally, the axios interceptor
+attaches it to every request, and a 401 outside the public respondent routes
+clears the session and returns to `/login`.
 
-Admin routes sit behind server auth middleware. Some routers honour a
-development-only bypass driven by `DEV_BYPASS_AUTH`, `DEV_USER_ID`, and
-`DEV_COMPANY_ID`, which exists so local work and automated runs do not need a
-login round-trip. **Set `DEV_BYPASS_AUTH=false` for anything reachable from a
-network.**
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#F76046','primaryTextColor':'#ffffff','primaryBorderColor':'#E54F36','lineColor':'#3B82F6','secondaryColor':'#D9E7F1','tertiaryColor':'#D9E7F1','fontFamily':'ui-sans-serif, system-ui, sans-serif'}}}%%
+flowchart TD
+    Start[Open app] --> Router[TanStack Router]
+    Router --> Public{Public route?}
+    Public -- Yes --> PublicPage[Auth or respondent screen]
+    Public -- No --> TokenCheck{JWT present?}
+    TokenCheck -- No --> Login["/login"]
+    TokenCheck -- Yes --> Workspace[Admin workspace]
+    Workspace --> Req[Authenticated request]
+    Req --> Mw[Server auth middleware]
+```
+
+Admin routes sit behind server auth middleware. Three routers —
+`surveys.routes.js`, `responses.routes.js`, and `analytics.routes.js` — honour a
+development bypass so local work and automated runs do not need a login
+round-trip. It activates only when **both** conditions hold:
+
+```js
+(process.env.NODE_ENV || "development") !== "production" &&
+process.env.DEV_BYPASS_AUTH !== "false"
+```
+
+Even then, a request must either carry a `Bearer` token or supply valid
+`DEV_USER_ID` and `DEV_COMPANY_ID` ObjectIds; otherwise it still gets a 401.
+
+> [!CAUTION]
+> The bypass is **opt-out, not opt-in** — it is on by default in any environment
+> that is not `production`. `NODE_ENV=production` is what disables it on Render.
+> If you run a staging or demo box on any other `NODE_ENV`, set
+> `DEV_BYPASS_AUTH=false` explicitly.
 
 ---
 
 ## Design tokens
 
-The palette lives in exactly one file: `client/src/styles/theme.css`, expressed
-in `oklch`. SurveyFlow is a coral / warm-orange primary with a soft-blue
-analytics accent, defined for light (`:root`) and dark (`.dark`).
+The palette lives in exactly one file — `client/src/styles/theme.css` — expressed
+in `oklch`. SurveyFlow is a coral / warm-orange primary with a soft-blue analytics
+accent, defined for light (`:root`) and dark (`.dark`).
 
 | Token | Role |
 |---|---|
@@ -289,6 +354,24 @@ please do not reintroduce literal colours.
 
 Helpers layered on the tokens: `.sf-page`, `.sf-gradient-primary`,
 `.sf-auth-panel`. Brand artwork lives in `client/public/brand/logos/`.
+
+---
+
+## Scripts
+
+| Command | Does |
+|---|---|
+| `npm run dev` | API + client together. |
+| `npm run server` / `npm run client` | One half at a time. |
+| `npm start` | Production API. |
+| `npm run build` | Install client deps, then build to `client/dist`. |
+| `npm run data:import` · `:ieq` · `:ieq:publish` · `npm run data:destroy` | Seed management. |
+| `npm test` | Unit suites, client + server. |
+| `npm run test:integration` | Server integration suite — needs a reachable MongoDB. |
+| `npm run test:e2e` | Playwright. |
+| `npm run test:all` | Unit + e2e. |
+| `npm run qa:all` / `npm run qa:open` | Run everything, then build/open the Allure report. |
+| `npm run route:generate --prefix client` | Regenerate the TanStack route tree. |
 
 ---
 
@@ -311,37 +394,55 @@ response validation, progress save, preview submission, recipient upload and
 status, analytics export, duplication and cloning, logic-engine branching and
 section skips, public response flows, and branding settings.
 
-Last verified run: 73 client unit tests and 38 server unit tests passing.
+| Suite | Tests | Result |
+|---|---|---|
+| Client unit | 73 | passing |
+| Server unit | 38 | passing |
 
 ---
 
 ## Deployment
 
-The API is a plain Node/Express process — give it the environment variables and
-a reachable MongoDB and it runs anywhere. A root `vercel.json` is present for
-client hosting.
-
-```bash
-npm install
-npm install --prefix client
-npm run build     # client bundle → client/dist
-npm start         # API
-```
+The client is a static bundle on **Netlify**; the API is a Node process on
+**Render**; MongoDB Atlas backs both. Configuration is committed as
+`netlify.toml` and `render.yaml`.
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#F76046','primaryTextColor':'#ffffff','primaryBorderColor':'#E54F36','lineColor':'#3B82F6','secondaryColor':'#3B82F6','tertiaryColor':'#D9E7F1','fontFamily':'ui-sans-serif, system-ui, sans-serif'}}}%%
 flowchart LR
-    Build[npm run build] --> Static[client/dist]
-    Static --> CDN[Static host]
-    API[npm start] --> Express[Express API]
-    Express --> Mongo[(MongoDB)]
-    Express --> SMS[SMS provider]
-    Express --> S3[S3 assets]
-    CDN -->|/api| Express
+    Repo[GitHub master] --> NB[Netlify build]
+    Repo --> RB[Render build]
+    NB --> CDN[client/dist on CDN]
+    RB --> API[Express API]
+    CDN -->|VITE_API_URL| API
+    API --> Mongo[(MongoDB Atlas)]
+    API --> S3[S3 assets]
+    API --> SMS[SMS provider]
 ```
+
+| Concern | Netlify (client) | Render (API) |
+|---|---|---|
+| Build | `npm run build` in `client/`, publish `dist` | `npm install` at the root |
+| Start | static | `node server/server.js` |
+| Health | — | `/api/health` |
+| SPA routing | `/*` → `/index.html` (200) so TanStack Router owns deep links | — |
+| Key env | `VITE_API_URL` | `MONGO_URI`, `JWT_SECRET`, `FRONTEND_URL`, AWS/SMS |
+
+Manual deploy of the client:
+
+```bash
+npm install && npm install --prefix client
+VITE_API_URL="https://surveyflow-api.onrender.com" npm run build
+netlify deploy --prod --dir=client/dist
+```
+
+> [!IMPORTANT]
+> `VITE_API_URL` is baked into the bundle at **build** time, not read at runtime.
+> Changing it on Netlify requires a fresh deploy, not just a settings save.
 
 ---
 
-## Keeping this document honest
+## Maintaining this document
 
 Update this README in the same commit that changes any of:
 
@@ -362,6 +463,6 @@ npm run build
 
 ---
 
-## License
-
-ISC
+<div align="center">
+<sub>ISC licensed · <a href="https://github.com/Ericokim/SurveyFlow">github.com/Ericokim/SurveyFlow</a></sub>
+</div>
